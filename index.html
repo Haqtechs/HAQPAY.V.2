@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HaqPay – Home</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#008037">
+<meta name="description" content="HaqPay - Fast, secure, and reliable payment solutions">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HaqPay">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+
+<style>
+:root{
+  --green:#008037;
+  --green-strong:#00a84e;
+  --bg:#f3f8f5;
+  --card:#fff;
+  --text:#111;
+}
+
+body.dark{
+  --bg:#0f1a14;
+  --card:#15261d;
+  --text:#f2f2f2;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:70px;
+}
+
+/* TOPBAR */
+.topbar{
+  background:var(--green);
+  color:#fff;
+  padding:12px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:100;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+.left{display:flex;gap:10px;align-items:center}
+.profile{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.3);cursor:pointer}
+.iconbtn{
+  background:rgba(255,255,255,.15);
+  border:none;
+  color:#fff;
+  font-size:18px;
+  cursor:pointer;
+  position:relative;
+  width:36px;
+  height:36px;
+  border-radius:8px;
+  transition:all .2s;
+}
+.iconbtn:hover{background:rgba(255,255,255,.25);transform:scale(1.05)}
+.iconbtn:active{transform:scale(.95)}
+.badge{
+  position:absolute;top:-4px;right:-6px;
+  background:#ff4757;color:#fff;
+  font-size:9px;padding:2px 5px;border-radius:8px
+}
+
+/* SEARCH */
+.search-box{padding:12px 16px}
+.search-box input{
+  width:100%;
+  padding:12px 12px 12px 40px;
+  border-radius:12px;
+  border:1px solid #d9e9dc;
+  background:var(--card);
+  color:var(--text);
+  font-size:14px;
+  transition:all .3s;
+}
+.search-box input:focus{
+  outline:none;
+  border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(0,128,55,.1);
+}
+.search-box{position:relative}
+.search-box::before{
+  content:"🔍";
+  position:absolute;
+  left:28px;
+  top:24px;
+  font-size:16px;
+}
+
+/* BALANCE */
+.balance-card{
+  margin:0 16px 16px;
+  background:linear-gradient(135deg, var(--green-strong) 0%, var(--green) 100%);
+  color:#fff;
+  padding:18px;
+  border-radius:16px;
+  box-shadow:0 4px 12px rgba(0,128,55,.2);
+}
+.balance-actions{display:flex;gap:8px}
+.balance-actions button{
+  background:rgba(255,255,255,.2);
+  border:none;color:#fff;
+  padding:8px;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  cursor:pointer;
+  transition:all .2s;
+}
+.balance-actions button:hover{
+  background:rgba(255,255,255,.3);
+  transform:scale(1.1);
+}
+.balance-actions button:active{transform:scale(.9)}
+
+/* ACTIONS - SMALLER CARDS */
+.quick-actions{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  padding:0 16px 16px;
+}
+.act{
+  position:relative;
+  background:var(--card);
+  border-radius:12px;
+  padding:12px 8px;
+  text-align:center;
+  text-decoration:none;
+  color:var(--text);
+  box-shadow:0 2px 6px rgba(0,0,0,.05);
+  transition:all .2s;
+  font-size:13px;
+}
+.act:hover{
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
+}
+.act:active{transform:translateY(0)}
+.iconbox{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:var(--green);
+  color:#fff;
+  display:grid;
+  place-items:center;
+  margin:0 auto 8px;
+  font-size:18px;
+}
+.tag{
+  position:absolute;top:4px;right:4px;
+  background:#ff9f1a;color:#fff;
+  font-size:8px;padding:2px 5px;border-radius:6px;
+  font-weight:600;
+}
+
+/* VERTICAL SLIDER */
+.slider-vertical{
+  margin:0 16px 12px;
+  overflow:hidden;
+  border-radius:12px;
+  height:50px;
+  box-shadow:0 2px 6px rgba(0,0,0,.05);
+}
+.slides-v{
+  animation:slideVertical 12s infinite;
+}
+.slide-v{
+  background:linear-gradient(135deg, var(--green) 0%, var(--green-strong) 100%);
+  color:#fff;
+  padding:15px;
+  text-align:center;
+  height:50px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:500;
+}
+@keyframes slideVertical{
+  0%{transform:translateY(0)}
+  25%{transform:translateY(-50px)}
+  50%{transform:translateY(-100px)}
+  75%{transform:translateY(-150px)}
+  100%{transform:translateY(0)}
+}
+
+/* HORIZONTAL SLIDER */
+.slider-horizontal{
+  margin:0 16px 12px;
+  overflow:hidden;
+  border-radius:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,.05);
+}
+.slides-h{
+  display:flex;
+  animation:slideHorizontal 15s infinite;
+  width:500%;
+}
+.slide-h{
+  background:linear-gradient(135deg, #ff9f1a 0%, #ff6b35 100%);
+  color:#fff;
+  padding:15px;
+  text-align:center;
+  min-width:20%;
+  font-size:14px;
+  font-weight:500;
+}
+@keyframes slideHorizontal{
+  0%{transform:translateX(0)}
+  20%{transform:translateX(-20%)}
+  40%{transform:translateX(-40%)}
+  60%{transform:translateX(-60%)}
+  80%{transform:translateX(-80%)}
+  100%{transform:translateX(0)}
+}
+
+/* BANNERS */
+.banner{
+  margin:0 16px 12px;
+  padding:14px;
+  border-radius:12px;
+  font-weight:600;
+  text-align:center;
+  background:#ffe066;
+  box-shadow:0 2px 6px rgba(0,0,0,.05);
+  font-size:14px;
+}
+
+.tip{
+  margin:0 16px 12px;
+  padding:14px;
+  border-radius:12px;
+  font-weight:500;
+  text-align:center;
+  background:#e6f4ec;
+  font-size:13px;
+  color:#00602b;
+}
+
+/* IMPROVED NAV */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:60px;
+  background:var(--card);
+  display:flex;
+  border-top:1px solid rgba(0,0,0,.08);
+  box-shadow:0 -2px 10px rgba(0,0,0,.05);
+  z-index:100;
+}
+.bn{
+  flex:1;
+  text-decoration:none;
+  color:#666;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+  font-weight:500;
+  transition:all .2s;
+  position:relative;
+}
+.bn::before{
+  content:"";
+  position:absolute;
+  top:0;
+  width:0;
+  height:3px;
+  background:var(--green);
+  transition:width .3s;
+}
+.bn.active{
+  color:var(--green);
+}
+.bn.active::before{
+  width:60%;
+}
+.bn:hover{
+  background:rgba(0,128,55,.05);
+}
+.bn-icon{
+  font-size:20px;
+  margin-bottom:2px;
+}
+
+/* PIN MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+  backdrop-filter:blur(4px);
+}
+.modal-box{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  width:90%;
+  max-width:320px;
+  text-align:center;
+  box-shadow:0 8px 32px rgba(0,0,0,.2);
+}
+.modal-box h3{margin-top:0}
+.modal-box input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:2px solid #e0e0e0;
+  font-size:16px;
+  text-align:center;
+  letter-spacing:8px;
+}
+.modal-box input:focus{
+  outline:none;
+  border-color:var(--green);
+}
+.modal-box button{
+  background:var(--green);
+  color:#fff;
+  border:none;
+  padding:12px;
+  width:100%;
+  border-radius:10px;
+  margin-top:12px;
+  cursor:pointer;
+  font-weight:600;
+  transition:all .2s;
+}
+.modal-box button:hover{
+  background:var(--green-strong);
+  transform:scale(1.02);
+}
+
+/* TOAST NOTIFICATION */
+.toast{
+  position:fixed;
+  bottom:80px;
+  left:50%;
+  transform:translateX(-50%) translateY(100px);
+  background:var(--card);
+  color:var(--text);
+  padding:14px 20px;
+  border-radius:12px;
+  box-shadow:0 4px 16px rgba(0,0,0,.15);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  z-index:1001;
+  opacity:0;
+  transition:all .3s;
+  max-width:90%;
+  border-left:4px solid var(--green);
+}
+.toast.show{
+  transform:translateX(-50%) translateY(0);
+  opacity:1;
+}
+.toast-icon{
+  font-size:20px;
+}
+.toast-message{
+  font-size:14px;
+  font-weight:500;
+}
+
+/* SECTION HEADERS */
+.section-header{
+  padding:0 16px 8px;
+  font-size:16px;
+  font-weight:600;
+  color:var(--text);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.see-all{
+  font-size:12px;
+  color:var(--green);
+  text-decoration:none;
+  font-weight:500;
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="left">
+    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" class="profile" onclick="location.href='profile.html'">
+    <div>
+      <div style="font-size:12px;opacity:.9">Good day</div>
+      <b id="userName">User</b>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="iconbtn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+    <button class="iconbtn" onclick="notify()" title="Notifications">🔔</button>
+    <button class="iconbtn" onclick="support()" title="Support">🎧<span class="badge">HELP</span></button>
+  </div>
+</header>
+
+<div class="search-box">
+  <input id="search" placeholder="Search HaqPay services…">
+</div>
+
+<section class="balance-card">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <small style="opacity:.9;font-size:12px">Available Balance</small>
+      <h2 id="bal" style="margin:8px 0;font-size:28px">****</h2>
+    </div>
+    <div class="balance-actions">
+      <button onclick="openPin()" title="View balance">👁️</button>
+      <button onclick="refreshBal()" title="Refresh">🔄</button>
+    </div>
+  </div>
+</section>
+
+<div class="section-header">
+  <span>Quick Actions</span>
+  <a href="more.html" class="see-all">See all</a>
+</div>
+
+<section class="quick-actions" id="actions">
+  <a class="act" data-name="transfer" href="transfer.html"><span class="tag">FREE</span><div class="iconbox">💸</div>Transfer</a>
+  <a class="act" data-name="airtime" href="airtime.html"><span class="tag">10% OFF</span><div class="iconbox">📱</div>Airtime</a>
+  <a class="act" data-name="data" href="data.html"><span class="tag">15% OFF</span><div class="iconbox">📶</div>Data</a>
+  <a class="act" href="bills.html"><div class="iconbox">💡</div>Bills</a>
+  <a class="act" href="card.html"><div class="iconbox">💳</div>Cards</a>
+  <a class="act" href="reward.html"><div class="iconbox">🎁</div>Rewards</a>
+  <a class="act" href="history.html"><div class="iconbox">📜</div>History</a>
+  <a class="act" href="loan.html"><span class="tag">HOT</span><div class="iconbox">💰</div>Loan</a>
+  <a class="act" href="more.html"><div class="iconbox">☰</div>More</a>
+</section>
+
+<div class="slider-vertical">
+  <div class="slides-v">
+    <div class="slide-v">🔥 Recharge ₦1000 — get ₦100 bonus</div>
+    <div class="slide-v">🚀 Instant transfers — no downtime</div>
+    <div class="slide-v">💡 Electricity bills — zero charges</div>
+    <div class="slide-v">⚡ Lightning-fast transactions</div>
+  </div>
+</div>
+
+<div class="banner">🎉 Get 2% cashback on all bill payments</div>
+
+<div class="slider-horizontal">
+  <div class="slides-h">
+    <div class="slide-h">💳 Free ATM card delivery nationwide</div>
+    <div class="slide-h">🎁 Refer 5 friends & earn ₦2,500</div>
+    <div class="slide-h">⚡ Pay with USSD — No internet needed</div>
+    <div class="slide-h">🏆 Win prizes in our monthly draw</div>
+    <div class="slide-h">💰 Save & earn 12% interest yearly</div>
+  </div>
+</div>
+
+<div class="tip">💡 Tip: Enable dark mode to save battery life</div>
+<div class="tip">🔒 Tip: Set up fingerprint for faster login</div>
+<div class="tip">📊 Tip: Check your spending insights weekly</div>
+<div class="tip">🎯 Tip: Set bill payment reminders to avoid penalties</div>
+<div class="tip">💳 Tip: Link your bank card for instant top-ups</div>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="bn active">
+    <span class="bn-icon">🏠</span>
+    <span>Home</span>
+  </a>
+  <a href="finance.html" class="bn">
+    <span class="bn-icon">💼</span>
+    <span>Finance</span>
+  </a>
+  <a href="reward.html" class="bn">
+    <span class="bn-icon">🎁</span>
+    <span>Rewards</span>
+  </a>
+  <a href="me.html" class="bn">
+    <span class="bn-icon">👤</span>
+    <span>Me</span>
+  </a>
+</nav>
+
+<div class="modal" id="pinModal">
+  <div class="modal-box">
+    <h3>Enter PIN</h3>
+    <p style="font-size:12px;color:#666">Enter your 4-digit transaction PIN</p>
+    <input id="pin" type="password" maxlength="4" placeholder="••••">
+    <button onclick="checkPin()">Continue</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span class="toast-icon">✅</span>
+  <span class="toast-message" id="toastMsg"></span>
+</div>
+
+<script>
+// Check authentication
+function checkAuth(){
+  const isLoggedIn = localStorage.getItem('haqpay_logged_in');
+  if(isLoggedIn !== 'true'){
+    window.location.href = 'login.html';
+    return false;
+  }
+  return true;
+}
+
+// Load user data
+function loadUserData(){
+  const email = localStorage.getItem('haqpay_current_user');
+  const users = JSON.parse(localStorage.getItem('haqpay_users') || '[]');
+  const user = users.find(u => u.email === email);
+  
+  if(user){
+    const firstName = user.fullName.split(' ')[0];
+    document.getElementById('userName').textContent = firstName;
+    const seed = encodeURIComponent(user.fullName);
+    document.querySelector('.profile').src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
+    
+    // Store user data for balance
+    window.currentUser = user;
+  }
+}
+
+let darkMode = localStorage.getItem('darkMode') === 'true';
+if(darkMode) document.body.classList.add('dark');
+
+function toggleDark(){
+  document.body.classList.toggle("dark");
+  darkMode = !darkMode;
+  localStorage.setItem('darkMode', darkMode);
+  showToast(darkMode ? "🌙 Dark mode enabled" : "☀️ Light mode enabled");
+}
+
+function openPin(){
+  pinModal.style.display="flex";
+  setTimeout(() => pin.focus(), 100);
+}
+
+function checkPin(){
+  const enteredPin = pin.value;
+  
+  if(window.currentUser && enteredPin === window.currentUser.pin){
+    bal.innerText = `₦${window.currentUser.balance.toLocaleString('en-NG', {minimumFractionDigits: 2})}`;
+    pinModal.style.display="none";
+    pin.value="";
+    showToast("✅ Balance revealed");
+  } else {
+    showToast("❌ Wrong PIN. Try again");
+    pin.value="";
+  }
+}
+
+function refreshBal(){
+  const btn = event.target;
+  btn.style.animation = "none";
+  setTimeout(() => btn.style.animation = "", 10);
+  
+  // Reload user data to get latest balance
+  loadUserData();
+  showToast("🔄 Balance refreshed successfully");
+}
+
+function notify(){
+  showToast("🔔 No new notifications");
+}
+
+function support(){
+  location.href="https://wa.me/2347084160928?text=Hello%20HaqPay%20Support";
+}
+
+function showToast(message){
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toastMsg');
+  toastMsg.innerText = message;
+  toast.classList.add('show');
+  
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3000);
+}
+
+// Search functionality
+search.oninput = () => {
+  const val = search.value.toLowerCase();
+  document.querySelectorAll(".act").forEach(a => {
+    a.style.display = a.innerText.toLowerCase().includes(val) ? "block" : "none";
+  });
+}
+
+// Close modal when clicking outside
+pinModal.onclick = (e) => {
+  if(e.target === pinModal) {
+    pinModal.style.display = "none";
+    pin.value = "";
+  }
+}
+
+// Initialize
+if(checkAuth()){
+  loadUserData();
+  setTimeout(() => {
+    if(window.currentUser){
+      const firstName = window.currentUser.fullName.split(' ')[0];
+      showToast(`👋 Welcome back, ${firstName}!`);
+    }
+  }, 1000);
+}
+
+// PWA Installation and Service Worker
+let deferredPrompt;
+let installButton;
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(registration => {
+        console.log('ServiceWorker registered:', registration.scope);
+      })
+      .catch(err => {
+        console.log('ServiceWorker registration failed:', err);
+      });
+  });
+}
+
+// Listen for beforeinstallprompt event
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallPrompt();
+});
+
+// Show install prompt
+function showInstallPrompt() {
+  const installPrompt = document.createElement('div');
+  installPrompt.id = 'installPrompt';
+  installPrompt.innerHTML = `
+    <div style="position:fixed;bottom:80px;left:16px;right:16px;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:999;display:flex;align-items:center;gap:12px;">
+      <div style="flex:1">
+        <strong style="display:block;margin-bottom:4px;color:var(--text)">Install HaqPay</strong>
+        <small style="color:#666">Add to home screen for quick access</small>
+      </div>
+      <button onclick="installPWA()" style="background:var(--green);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;white-space:nowrap">Install</button>
+      <button onclick="dismissInstall()" style="background:transparent;border:none;font-size:20px;cursor:pointer;color:#999">×</button>
+    </div>
+  `;
+  document.body.appendChild(installPrompt);
+}
+
+// Install PWA
+window.installPWA = async () => {
+  if (!deferredPrompt) return;
+  
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  
+  if (outcome === 'accepted') {
+    showToast('✅ App installed successfully!');
+  }
+  
+  deferredPrompt = null;
+  dismissInstall();
+};
+
+// Dismiss install prompt
+window.dismissInstall = () => {
+  const prompt = document.getElementById('installPrompt');
+  if (prompt) prompt.remove();
+};
+
+// Listen for app installed event
+window.addEventListener('appinstalled', () => {
+  showToast('🎉 HaqPay installed! Launch from your home screen.');
+  deferredPrompt = null;
+});
+
+// Request notification permission
+if ('Notification' in window && navigator.serviceWorker) {
+  if (Notification.permission === 'default') {
+    setTimeout(() => {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          showToast('🔔 Notifications enabled');
+        }
+      });
+    }, 5000);
+  }
+}
+
+// Check if running as PWA
+function isPWA() {
+  return window.matchMedia('(display-mode: standalone)').matches || 
+         window.navigator.standalone === true;
+}
+
+if (isPWA()) {
+  console.log('Running as PWA');
+  // Hide browser UI elements if needed
+}
+</script>
+
+</body>
+</html>

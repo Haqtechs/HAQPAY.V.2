@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rewards - HaqPay</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HaqPay">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+    <style>
+        :root{
+          --green:#008037;
+          --green-strong:#00a84e;
+          --bg:#f3f8f5;
+          --card:#fff;
+          --text:#111;
+          --gold:#ffd700;
+          --silver:#c0c0c0;
+          --bronze:#cd7f32;
+        }
+
+        body.dark{
+          --bg:#0f1a14;
+          --card:#15261d;
+          --text:#f2f2f2;
+        }
+
+        *{box-sizing:border-box}
+        body{
+          margin:0;
+          font-family:Inter,Arial,sans-serif;
+          background:var(--bg);
+          color:var(--text);
+          padding-bottom:70px;
+        }
+
+        /* HEADER */
+        .header{
+          background:var(--green);
+          color:#fff;
+          padding:16px;
+          display:flex;
+          align-items:center;
+          gap:12px;
+          position:sticky;
+          top:0;
+          z-index:100;
+          box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+        .back-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+          transition:all .2s;
+        }
+        .back-btn:hover{background:rgba(255,255,255,.25)}
+        .header h2{
+          margin:0;
+          font-size:18px;
+          font-weight:700;
+          flex:1;
+        }
+        .icon-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+        }
+
+        /* POINTS CARD */
+        .points-card{
+          margin:16px;
+          background:linear-gradient(135deg, var(--gold) 0%, #ffa500 100%);
+          color:#fff;
+          padding:24px;
+          border-radius:16px;
+          box-shadow:0 4px 12px rgba(255,215,0,.3);
+          text-align:center;
+          position:relative;
+          overflow:hidden;
+        }
+        .points-card::before{
+          content:"✨";
+          position:absolute;
+          font-size:100px;
+          opacity:.1;
+          top:-20px;
+          right:-20px;
+        }
+        .points-label{
+          font-size:13px;
+          opacity:.9;
+          margin-bottom:8px;
+        }
+        .points-amount{
+          font-size:48px;
+          font-weight:800;
+          margin-bottom:8px;
+        }
+        .tier-badge{
+          display:inline-block;
+          background:rgba(255,255,255,.2);
+          padding:6px 16px;
+          border-radius:20px;
+          font-size:12px;
+          font-weight:600;
+          margin-bottom:16px;
+        }
+        .points-actions{
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:10px;
+        }
+        .points-btn{
+          background:rgba(255,255,255,.95);
+          color:#000;
+          border:none;
+          padding:12px;
+          border-radius:10px;
+          font-weight:600;
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .points-btn:active{transform:scale(.97)}
+
+        /* PROGRESS BAR */
+        .progress-card{
+          margin:0 16px 16px;
+          background:var(--card);
+          padding:16px;
+          border-radius:12px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+        }
+        .progress-header{
+          display:flex;
+          justify-content:space-between;
+          margin-bottom:10px;
+          font-size:13px;
+        }
+        .progress-bar{
+          height:10px;
+          background:#e0e0e0;
+          border-radius:5px;
+          overflow:hidden;
+          margin-bottom:10px;
+        }
+        .progress-fill{
+          height:100%;
+          background:linear-gradient(90deg, var(--green-strong), var(--green));
+          border-radius:5px;
+          transition:width .5s;
+        }
+        .progress-text{
+          font-size:12px;
+          color:#888;
+          text-align:center;
+        }
+
+        /* SECTION HEADER */
+        .section-header{
+          padding:20px 16px 12px;
+          font-size:16px;
+          font-weight:700;
+          color:var(--text);
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+        }
+        .see-all{
+          font-size:13px;
+          color:var(--green);
+          text-decoration:none;
+          font-weight:600;
+        }
+
+        /* EARN POINTS */
+        .earn-grid{
+          padding:0 16px 16px;
+          display:grid;
+          grid-template-columns:repeat(2,1fr);
+          gap:12px;
+        }
+        .earn-card{
+          background:var(--card);
+          border-radius:12px;
+          padding:16px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          cursor:pointer;
+          transition:all .2s;
+          text-align:center;
+        }
+        .earn-card:hover{
+          transform:translateY(-2px);
+          box-shadow:0 4px 12px rgba(0,0,0,.1);
+        }
+        .earn-icon{
+          width:56px;
+          height:56px;
+          border-radius:50%;
+          background:var(--green);
+          color:#fff;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:28px;
+          margin:0 auto 12px;
+        }
+        .earn-title{
+          font-weight:700;
+          font-size:14px;
+          margin-bottom:6px;
+        }
+        .earn-points{
+          color:var(--green);
+          font-weight:700;
+          font-size:13px;
+        }
+
+        /* REFERRAL CARD */
+        .referral-card{
+          margin:0 16px 16px;
+          background:linear-gradient(135deg, var(--green-strong) 0%, var(--green) 100%);
+          color:#fff;
+          padding:20px;
+          border-radius:12px;
+          box-shadow:0 4px 12px rgba(0,128,55,.2);
+        }
+        .referral-title{
+          font-weight:700;
+          font-size:16px;
+          margin-bottom:8px;
+        }
+        .referral-desc{
+          font-size:13px;
+          opacity:.9;
+          margin-bottom:16px;
+        }
+        .referral-code{
+          background:rgba(255,255,255,.2);
+          padding:12px;
+          border-radius:10px;
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom:12px;
+        }
+        .code-text{
+          font-size:18px;
+          font-weight:700;
+          letter-spacing:2px;
+        }
+        .copy-code{
+          background:rgba(255,255,255,.95);
+          color:var(--green);
+          border:none;
+          padding:8px 16px;
+          border-radius:8px;
+          font-weight:600;
+          cursor:pointer;
+        }
+        .share-btn{
+          width:100%;
+          background:rgba(255,255,255,.95);
+          color:var(--green);
+          border:none;
+          padding:12px;
+          border-radius:10px;
+          font-weight:600;
+          cursor:pointer;
+        }
+
+        /* REWARDS TABS */
+        .tabs{
+          padding:0 16px 12px;
+          display:flex;
+          gap:8px;
+          overflow-x:auto;
+          -webkit-overflow-scrolling:touch;
+        }
+        .tabs::-webkit-scrollbar{display:none}
+        .tab{
+          padding:8px 16px;
+          border-radius:20px;
+          border:1px solid #d9e9dc;
+          background:var(--card);
+          color:var(--text);
+          font-size:13px;
+          font-weight:600;
+          white-space:nowrap;
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .tab.active{
+          background:var(--green);
+          color:#fff;
+          border-color:var(--green);
+        }
+
+        /* REWARDS GRID */
+        .rewards-grid{
+          padding:0 16px 16px;
+          display:grid;
+          grid-template-columns:repeat(2,1fr);
+          gap:12px;
+        }
+        .reward-card{
+          background:var(--card);
+          border-radius:12px;
+          overflow:hidden;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .reward-card:hover{
+          transform:translateY(-2px);
+          box-shadow:0 4px 12px rgba(0,0,0,.1);
+        }
+        .reward-image{
+          width:100%;
+          height:120px;
+          background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:48px;
+        }
+        .reward-info{
+          padding:14px;
+        }
+        .reward-name{
+          font-weight:700;
+          font-size:14px;
+          margin-bottom:6px;
+        }
+        .reward-cost{
+          color:var(--green);
+          font-weight:700;
+          font-size:13px;
+          margin-bottom:10px;
+        }
+        .redeem-btn{
+          width:100%;
+          background:var(--green);
+          color:#fff;
+          border:none;
+          padding:10px;
+          border-radius:8px;
+          font-weight:600;
+          cursor:pointer;
+          font-size:13px;
+        }
+        .redeem-btn:disabled{
+          background:#ccc;
+          cursor:not-allowed;
+        }
+
+        /* ACHIEVEMENTS */
+        .achievements-list{
+          padding:0 16px 16px;
+        }
+        .achievement-card{
+          background:var(--card);
+          border-radius:12px;
+          padding:16px;
+          margin-bottom:12px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          display:flex;
+          align-items:center;
+          gap:14px;
+        }
+        .achievement-icon{
+          width:56px;
+          height:56px;
+          border-radius:50%;
+          background:#ffd700;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:28px;
+          flex-shrink:0;
+        }
+        .achievement-icon.locked{
+          background:#e0e0e0;
+          opacity:.5;
+        }
+        .achievement-info{
+          flex:1;
+        }
+        .achievement-title{
+          font-weight:700;
+          font-size:14px;
+          margin-bottom:4px;
+        }
+        .achievement-desc{
+          font-size:12px;
+          color:#888;
+        }
+        .achievement-reward{
+          color:var(--green);
+          font-weight:700;
+          font-size:13px;
+        }
+
+        /* BOTTOM NAV */
+        .bottom-nav{
+          position:fixed;
+          bottom:0;
+          left:0;
+          right:0;
+          height:60px;
+          background:var(--card);
+          display:flex;
+          border-top:1px solid rgba(0,0,0,.08);
+          box-shadow:0 -2px 10px rgba(0,0,0,.05);
+          z-index:100;
+        }
+        .bn{
+          flex:1;
+          text-decoration:none;
+          color:#666;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          font-size:11px;
+          font-weight:500;
+          transition:all .2s;
+          position:relative;
+        }
+        .bn::before{
+          content:"";
+          position:absolute;
+          top:0;
+          width:0;
+          height:3px;
+          background:var(--green);
+          transition:width .3s;
+        }
+        .bn.active{color:var(--green)}
+        .bn.active::before{width:60%}
+        .bn-icon{
+          font-size:20px;
+          margin-bottom:2px;
+        }
+
+        /* MODAL */
+        .modal{
+          position:fixed;
+          inset:0;
+          background:rgba(0,0,0,.6);
+          display:none;
+          align-items:center;
+          justify-content:center;
+          z-index:1000;
+          backdrop-filter:blur(4px);
+          padding:20px;
+        }
+        .modal.show{display:flex}
+        .modal-content{
+          background:var(--card);
+          border-radius:16px;
+          width:100%;
+          max-width:400px;
+          text-align:center;
+          box-shadow:0 8px 32px rgba(0,0,0,.2);
+          padding:24px;
+        }
+        .modal-icon{
+          font-size:64px;
+          margin-bottom:16px;
+        }
+        .modal-title{
+          font-weight:700;
+          font-size:20px;
+          margin-bottom:12px;
+        }
+        .modal-text{
+          font-size:14px;
+          color:#888;
+          margin-bottom:24px;
+        }
+        .modal-actions{
+          display:flex;
+          gap:10px;
+        }
+        .modal-btn{
+          flex:1;
+          padding:14px;
+          border-radius:10px;
+          border:none;
+          font-weight:600;
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .modal-btn.primary{
+          background:var(--green);
+          color:#fff;
+        }
+        .modal-btn.secondary{
+          background:rgba(0,0,0,.05);
+          color:var(--text);
+        }
+
+        /* TOAST */
+        .toast{
+          position:fixed;
+          bottom:80px;
+          left:50%;
+          transform:translateX(-50%) translateY(100px);
+          background:var(--card);
+          color:var(--text);
+          padding:14px 20px;
+          border-radius:12px;
+          box-shadow:0 4px 16px rgba(0,0,0,.15);
+          display:flex;
+          align-items:center;
+          gap:10px;
+          z-index:1001;
+          opacity:0;
+          transition:all .3s;
+          max-width:90%;
+          border-left:4px solid var(--green);
+        }
+        .toast.show{
+          transform:translateX(-50%) translateY(0);
+          opacity:1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <button class="back-btn" id="backBtn">←</button>
+        <h2>Rewards</h2>
+        <button class="icon-btn" id="themeBtn">🌙</button>
+    </header>
+
+    <!-- POINTS CARD -->
+    <section class="points-card">
+        <div class="points-label">Your Points Balance</div>
+        <div class="points-amount" id="pointsAmount">2,850</div>
+        <div class="tier-badge">🏆 Gold Member</div>
+        <div class="points-actions">
+            <button class="points-btn" id="historyBtn">📊 History</button>
+            <button class="points-btn" id="howToEarnBtn">💡 Earn More</button>
+        </div>
+    </section>
+
+    <!-- PROGRESS TO NEXT TIER -->
+    <div class="progress-card">
+        <div class="progress-header">
+            <span>Progress to Platinum 💎</span>
+            <span style="color:var(--green);font-weight:700">150 more points</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" style="width:95%"></div>
+        </div>
+        <div class="progress-text">You're almost there! Keep earning points.</div>
+    </div>
+
+    <!-- REFERRAL SECTION -->
+    <div class="referral-card">
+        <div class="referral-title">🎁 Refer & Earn ₦500 + 100 Points</div>
+        <div class="referral-desc">Share your code with friends. Both get rewarded!</div>
+        <div class="referral-code">
+            <div class="code-text" id="referralCode">HAQ2850</div>
+            <button class="copy-code" id="copyCodeBtn">Copy</button>
+        </div>
+        <button class="share-btn" id="shareBtn">📤 Share Now</button>
+    </div>
+
+    <!-- EARN POINTS -->
+    <div class="section-header">
+        <span>Earn Points</span>
+    </div>
+    <div class="earn-grid">
+        <div class="earn-card" onclick="earnPoints('referral')">
+            <div class="earn-icon">👥</div>
+            <div class="earn-title">Refer Friends</div>
+            <div class="earn-points">+100 pts</div>
+        </div>
+        <div class="earn-card" onclick="earnPoints('transaction')">
+            <div class="earn-icon">💸</div>
+            <div class="earn-title">Send Money</div>
+            <div class="earn-points">+10 pts</div>
+        </div>
+        <div class="earn-card" onclick="earnPoints('bills')">
+            <div class="earn-icon">💡</div>
+            <div class="earn-title">Pay Bills</div>
+            <div class="earn-points">+15 pts</div>
+        </div>
+        <div class="earn-card" onclick="earnPoints('daily')">
+            <div class="earn-icon">📅</div>
+            <div class="earn-title">Daily Login</div>
+            <div class="earn-points">+5 pts</div>
+        </div>
+    </div>
+
+    <!-- REWARDS TABS -->
+    <div class="section-header">
+        <span>Redeem Rewards</span>
+    </div>
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('all')">All</button>
+        <button class="tab" onclick="switchTab('cashback')">Cashback</button>
+        <button class="tab" onclick="switchTab('vouchers')">Vouchers</button>
+        <button class="tab" onclick="switchTab('airtime')">Airtime</button>
+        <button class="tab" onclick="switchTab('data')">Data</button>
+    </div>
+
+    <!-- REWARDS GRID -->
+    <div class="rewards-grid" id="rewardsGrid">
+        <!-- Rewards will be loaded here -->
+    </div>
+
+    <!-- ACHIEVEMENTS -->
+    <div class="section-header">
+        <span>Achievements</span>
+    </div>
+    <div class="achievements-list">
+        <div class="achievement-card">
+            <div class="achievement-icon">🎯</div>
+            <div class="achievement-info">
+                <div class="achievement-title">First Transaction</div>
+                <div class="achievement-desc">Complete your first transaction</div>
+            </div>
+            <div class="achievement-reward">+50 pts</div>
+        </div>
+        <div class="achievement-card">
+            <div class="achievement-icon">🔥</div>
+            <div class="achievement-info">
+                <div class="achievement-title">7-Day Streak</div>
+                <div class="achievement-desc">Login for 7 consecutive days</div>
+            </div>
+            <div class="achievement-reward">+100 pts</div>
+        </div>
+        <div class="achievement-card">
+            <div class="achievement-icon locked">🏆</div>
+            <div class="achievement-info">
+                <div class="achievement-title">Power User</div>
+                <div class="achievement-desc">Complete 50 transactions</div>
+            </div>
+            <div class="achievement-reward">+200 pts</div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bn">
+            <span class="bn-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="finance.html" class="bn">
+            <span class="bn-icon">💼</span>
+            <span>Finance</span>
+        </a>
+        <a href="reward.html" class="bn active">
+            <span class="bn-icon">🎁</span>
+            <span>Rewards</span>
+        </a>
+        <a href="me.html" class="bn">
+            <span class="bn-icon">👤</span>
+            <span>Me</span>
+        </a>
+    </nav>
+
+    <!-- REDEEM MODAL -->
+    <div class="modal" id="redeemModal">
+        <div class="modal-content">
+            <div class="modal-icon">🎉</div>
+            <div class="modal-title" id="modalTitle">Confirm Redemption</div>
+            <div class="modal-text" id="modalText">Are you sure you want to redeem this reward?</div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="cancelRedeem">Cancel</button>
+                <button class="modal-btn primary" id="confirmRedeem">Redeem</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <span id="toastMsg"></span>
+    </div>
+
+    <script>
+     
+        // Rewards data
+        const rewards = [
+            { id: 1, name: '₦1,000 Cashback', cost: 500, icon: '💰', category: 'cashback' },
+            { id: 2, name: '₦5,000 Cashback', cost: 2500, icon: '💰', category: 'cashback' },
+            { id: 3, name: '₦10,000 Gift Card', cost: 5000, icon: '🎁', category: 'vouchers' },
+            { id: 4, name: '₦500 Airtime', cost: 250, icon: '📱', category: 'airtime' },
+            { id: 5, name: '₦1,000 Airtime', cost: 500, icon: '📱', category: 'airtime' },
+            { id: 6, name: '1GB Data Bundle', cost: 400, icon: '📶', category: 'data' },
+            { id: 7, name: '5GB Data Bundle', cost: 1800, icon: '📶', category: 'data' },
+            { id: 8, name: 'Netflix Voucher', cost: 3000, icon: '🎬', category: 'vouchers' }
+        ];
+
+        let userPoints = 2850;
+        let currentCategory = 'all';
+        let selectedReward = null;
+
+        // Load rewards
+        function loadRewards() {
+            const grid = document.getElementById('rewardsGrid');
+            const filtered = currentCategory === 'all' 
+                ? rewards 
+                : rewards.filter(r => r.category === currentCategory);
+
+            grid.innerHTML = filtered.map(r => {
+                const canRedeem = userPoints >= r.cost;
+                return `
+                    <div class="reward-card" onclick="redeemReward(${r.id})">
+                        <div class="reward-image">${r.icon}</div>
+                        <div class="reward-info">
+                            <div class="reward-name">${r.name}</div>
+                            <div class="reward-cost">${r.cost} points</div>
+                            <button class="redeem-btn" ${!canRedeem ? 'disabled' : ''}>
+                                ${canRedeem ? 'Redeem' : 'Not Enough Points'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Switch tab
+        function switchTab(category) {
+            currentCategory = category;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            loadRewards();
+        }
+
+        // Redeem reward
+        function redeemReward(id) {
+            const reward = rewards.find(r => r.id === id);
+            if (!reward || userPoints < reward.cost) {
+                showToast('❌ Not enough points');
+                return;
+            }
+
+            selectedReward = reward;
+            document.getElementById('modalTitle').textContent = `Redeem ${reward.name}?`;
+            document.getElementById('modalText').textContent = `This will cost you ${reward.cost} points. Your new balance will be ${userPoints - reward.cost} points.`;
+            document.getElementById('redeemModal').classList.add('show');
+        }
+
+        // Confirm redemption
+        function confirmRedemption() {
+            if (selectedReward) {
+                userPoints -= selectedReward.cost;
+                document.getElementById('pointsAmount').textContent = userPoints.toLocaleString();
+                document.getElementById('redeemModal').classList.remove('show');
+                showToast(`🎉 ${selectedReward.name} redeemed successfully!`);
+                loadRewards();
+                selectedReward = null;
+            }
+        }
+
+        // Earn points
+        function earnPoints(type) {
+            const points = {
+                referral: 100,
+                transaction: 10,
+                bills: 15,
+                daily: 5
+            };
+            
+            const messages = {
+                referral: '👥 Share your referral code to earn points!',
+                transaction: '💸 Complete transactions to earn points!',
+                bills: '💡 Pay bills to earn points!',
+                daily: '📅 Login daily to earn points!'
+            };
+            
+            showToast(messages[type]);
+        }
+
+        // Copy referral code
+        function copyCode() {
+            const code = document.getElementById('referralCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('✅ Referral code copied!');
+            });
+        }
+
+        // Share referral
+        function shareReferral() {
+            const code = document.getElementById('referralCode').textContent;
+            const text = `Join HaqPay with my code ${code} and we both get ₦500 + 100 points! 🎁`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Join HaqPay',
+                    text: text
+                }).then(() => {
+                    showToast('📤 Shared successfully!');
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('📋 Referral message copied!');
+                });
+            }
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Dark mode
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+        if(darkMode) document.body.classList.add('dark');
+
+        function toggleDark() {
+            document.body.classList.toggle('dark');
+            darkMode = !darkMode;
+            localStorage.setItem('darkMode', darkMode);
+            showToast(darkMode ? '🌙 Dark mode on' : '☀️ Light mode on');
+        }
+
+        // Event listeners
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        document.getElementById('themeBtn').addEventListener('click', toggleDark);
+        document.getElementById('historyBtn').addEventListener('click', () => showToast('📊 Points history...'));
+        document.getElementById('howToEarnBtn').addEventListener('click', () => showToast('💡 Scroll down to see earn options'));
+        document.getElementById('copyCodeBtn').addEventListener('click', copyCode);
+        document.getElementById('shareBtn').addEventListener('click', shareReferral);
+        document.getElementById('cancelRedeem').addEventListener('click', () => {
+            document.getElementById('redeemModal').classList.remove('show');
+        });
+        document.getElementById('confirmRedeem').addEventListener('click', confirmRedemption);
+
+        // Close modal on backdrop
+        document.getElementById('redeemModal').addEventListener('click', (e) => {
+            if (e.target.id === 'redeemModal') {
+                e.target.classList.remove('show');
+            }
+        });
+
+        // Initialize
+        loadRewards();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay Bills - HaqPay</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HaqPay">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+    <style>
+        :root{
+          --green:#008037;
+          --green-strong:#00a84e;
+          --bg:#f3f8f5;
+          --card:#fff;
+          --text:#111;
+        }
+
+        body.dark{
+          --bg:#0f1a14;
+          --card:#15261d;
+          --text:#f2f2f2;
+        }
+
+        *{box-sizing:border-box}
+        body{
+          margin:0;
+          font-family:Inter,Arial,sans-serif;
+          background:var(--bg);
+          color:var(--text);
+          padding-bottom:70px;
+        }
+
+        .header{
+          background:var(--green);
+          color:#fff;
+          padding:16px;
+          display:flex;
+          align-items:center;
+          gap:12px;
+          position:sticky;
+          top:0;
+          z-index:100;
+          box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+        .back-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+        }
+        .header h2{
+          margin:0;
+          font-size:18px;
+          font-weight:700;
+          flex:1;
+        }
+
+        .promo-banner{
+          margin:16px;
+          background:linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+          padding:16px;
+          border-radius:12px;
+          text-align:center;
+          font-weight:700;
+          color:#000;
+        }
+
+        .section-header{
+          padding:20px 16px 12px;
+          font-size:16px;
+          font-weight:700;
+          color:var(--text);
+        }
+
+        .categories-grid{
+          padding:0 16px 16px;
+          display:grid;
+          grid-template-columns:repeat(4,1fr);
+          gap:12px;
+        }
+        .category-card{
+          background:var(--card);
+          border-radius:12px;
+          padding:16px 8px;
+          text-align:center;
+          cursor:pointer;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          transition:all .2s;
+        }
+        .category-card:hover{
+          transform:translateY(-2px);
+          box-shadow:0 4px 12px rgba(0,0,0,.1);
+        }
+        .category-icon{
+          font-size:32px;
+          margin-bottom:8px;
+        }
+        .category-name{
+          font-size:12px;
+          font-weight:600;
+        }
+
+        .saved-billers{
+          display:flex;
+          gap:12px;
+          overflow-x:auto;
+          padding:0 16px 16px;
+          -webkit-overflow-scrolling:touch;
+        }
+        .saved-billers::-webkit-scrollbar{display:none}
+        .biller-card{
+          min-width:120px;
+          background:var(--card);
+          border-radius:12px;
+          padding:16px;
+          text-align:center;
+          cursor:pointer;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+        }
+        .biller-icon{
+          width:48px;
+          height:48px;
+          border-radius:50%;
+          background:var(--green);
+          color:#fff;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:24px;
+          margin:0 auto 8px;
+        }
+        .biller-name{
+          font-size:12px;
+          font-weight:600;
+          margin-bottom:4px;
+        }
+        .biller-account{
+          font-size:10px;
+          color:#888;
+        }
+
+        .providers-grid{
+          padding:0 16px 16px;
+          display:grid;
+          grid-template-columns:repeat(3,1fr);
+          gap:12px;
+        }
+        .provider-card{
+          background:var(--card);
+          border:2px solid #e0e0e0;
+          border-radius:12px;
+          padding:16px;
+          text-align:center;
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .provider-card:hover{
+          border-color:var(--green);
+          transform:translateY(-2px);
+        }
+        .provider-card.active{
+          border-color:var(--green);
+          background:rgba(0,128,55,.05);
+        }
+        .provider-logo{
+          font-size:36px;
+          margin-bottom:8px;
+        }
+        .provider-name{
+          font-size:13px;
+          font-weight:600;
+        }
+
+        .form-card{
+          margin:0 16px 16px;
+          background:var(--card);
+          border-radius:12px;
+          padding:20px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+        }
+        .form-group{
+          margin-bottom:20px;
+        }
+        .form-label{
+          display:block;
+          font-size:13px;
+          font-weight:600;
+          margin-bottom:8px;
+        }
+        .form-input, .form-select{
+          width:100%;
+          padding:14px;
+          border:2px solid #e0e0e0;
+          border-radius:10px;
+          font-size:14px;
+          background:var(--card);
+          color:var(--text);
+        }
+        .form-input:focus, .form-select:focus{
+          outline:none;
+          border-color:var(--green);
+        }
+        .verify-status{
+          margin-top:8px;
+          padding:10px;
+          border-radius:8px;
+          font-size:13px;
+          display:none;
+        }
+        .verify-status.success{
+          display:block;
+          background:#e6f4ec;
+          color:var(--green);
+        }
+
+        .packages-grid{
+          display:grid;
+          gap:10px;
+          margin-top:12px;
+        }
+        .package-card{
+          background:rgba(0,128,55,.05);
+          border:2px solid transparent;
+          border-radius:10px;
+          padding:12px;
+          cursor:pointer;
+          transition:all .2s;
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+        }
+        .package-card:hover{
+          border-color:var(--green);
+        }
+        .package-card.active{
+          background:var(--green);
+          color:#fff;
+          border-color:var(--green);
+        }
+        .package-name{
+          font-weight:600;
+          font-size:14px;
+        }
+        .package-price{
+          font-weight:700;
+          font-size:14px;
+        }
+
+        .pay-btn{
+          width:100%;
+          background:var(--green);
+          color:#fff;
+          border:none;
+          padding:16px;
+          border-radius:12px;
+          font-weight:600;
+          font-size:16px;
+          cursor:pointer;
+          margin-top:16px;
+        }
+        .pay-btn:disabled{
+          background:#ccc;
+          cursor:not-allowed;
+        }
+
+        .bottom-nav{
+          position:fixed;
+          bottom:0;
+          left:0;
+          right:0;
+          height:60px;
+          background:var(--card);
+          display:flex;
+          border-top:1px solid rgba(0,0,0,.08);
+          box-shadow:0 -2px 10px rgba(0,0,0,.05);
+          z-index:100;
+        }
+        .bn{
+          flex:1;
+          text-decoration:none;
+          color:#666;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          font-size:11px;
+          font-weight:500;
+          position:relative;
+        }
+        .bn.active{color:var(--green)}
+        .bn-icon{
+          font-size:20px;
+          margin-bottom:2px;
+        }
+
+        .modal{
+          position:fixed;
+          inset:0;
+          background:rgba(0,0,0,.6);
+          display:none;
+          align-items:center;
+          justify-content:center;
+          z-index:1000;
+          backdrop-filter:blur(4px);
+          padding:20px;
+        }
+        .modal.show{display:flex}
+        .modal-content{
+          background:var(--card);
+          border-radius:16px;
+          width:100%;
+          max-width:400px;
+          text-align:center;
+          box-shadow:0 8px 32px rgba(0,0,0,.2);
+          padding:24px;
+        }
+        .modal-icon{
+          font-size:64px;
+          margin-bottom:16px;
+        }
+        .modal-title{
+          font-weight:700;
+          font-size:20px;
+          margin-bottom:12px;
+        }
+        .modal-detail{
+          background:rgba(0,128,55,.05);
+          padding:16px;
+          border-radius:10px;
+          margin:16px 0;
+          text-align:left;
+        }
+        .detail-row{
+          display:flex;
+          justify-content:space-between;
+          padding:8px 0;
+          font-size:14px;
+        }
+        .modal-actions{
+          display:flex;
+          gap:10px;
+          margin-top:20px;
+        }
+        .modal-btn{
+          flex:1;
+          padding:14px;
+          border-radius:10px;
+          border:none;
+          font-weight:600;
+          cursor:pointer;
+        }
+        .modal-btn.primary{
+          background:var(--green);
+          color:#fff;
+        }
+        .modal-btn.secondary{
+          background:rgba(0,0,0,.05);
+          color:var(--text);
+        }
+
+        .success-icon{
+          width:80px;
+          height:80px;
+          border-radius:50%;
+          background:#e6f4ec;
+          color:var(--green);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:48px;
+          margin:0 auto 20px;
+          animation:successPop .5s;
+        }
+        @keyframes successPop{
+          0%{transform:scale(0)}
+          50%{transform:scale(1.1)}
+          100%{transform:scale(1)}
+        }
+
+        .toast{
+          position:fixed;
+          bottom:80px;
+          left:50%;
+          transform:translateX(-50%) translateY(100px);
+          background:var(--card);
+          color:var(--text);
+          padding:14px 20px;
+          border-radius:12px;
+          box-shadow:0 4px 16px rgba(0,0,0,.15);
+          z-index:1001;
+          opacity:0;
+          transition:all .3s;
+          border-left:4px solid var(--green);
+        }
+        .toast.show{
+          transform:translateX(-50%) translateY(0);
+          opacity:1;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <h2>Pay Bills</h2>
+    </header>
+
+    <div class="promo-banner">
+        🎉 Pay any bill and get 2% cashback!
+    </div>
+
+    <div class="section-header">Bill Categories</div>
+    <div class="categories-grid">
+        <div class="category-card" onclick="selectCategory('electricity')">
+            <div class="category-icon">⚡</div>
+            <div class="category-name">Electricity</div>
+        </div>
+        <div class="category-card" onclick="selectCategory('tv')">
+            <div class="category-icon">📺</div>
+            <div class="category-name">TV</div>
+        </div>
+        <div class="category-card" onclick="selectCategory('internet')">
+            <div class="category-icon">🌐</div>
+            <div class="category-name">Internet</div>
+        </div>
+        <div class="category-card" onclick="selectCategory('water')">
+            <div class="category-icon">💧</div>
+            <div class="category-name">Water</div>
+        </div>
+        <div class="category-card" onclick="selectCategory('waste')">
+            <div class="category-icon">🗑️</div>
+            <div class="category-name">Waste</div>
+        </div>
+        <div class="category-card" onclick="selectCategory('betting')">
+            <div class="category-icon">🎲</div>
+            <div class="category-name">Betting</div>
+        </div>
+        <div class="category-card" onclick="selectCategory('education')">
+            <div class="category-icon">🎓</div>
+            <div class="category-name">Education</div>
+        </div>
+        <div class="category-card" onclick="selectCategory('tax')">
+            <div class="category-icon">🏛️</div>
+            <div class="category-name">Tax</div>
+        </div>
+    </div>
+
+    <div class="section-header">Saved Billers</div>
+    <div class="saved-billers">
+        <div class="biller-card" onclick="useSaved('EKEDC', '04567891234')">
+            <div class="biller-icon">⚡</div>
+            <div class="biller-name">EKEDC</div>
+            <div class="biller-account">045...1234</div>
+        </div>
+        <div class="biller-card" onclick="useSaved('DStv', '8012345678')">
+            <div class="biller-icon">📺</div>
+            <div class="biller-name">DStv</div>
+            <div class="biller-account">801...5678</div>
+        </div>
+        <div class="biller-card" onclick="useSaved('Spectranet', '123456789')">
+            <div class="biller-icon">🌐</div>
+            <div class="biller-name">Spectranet</div>
+            <div class="biller-account">123...789</div>
+        </div>
+    </div>
+
+    <div id="providerSection" style="display:none">
+        <div class="section-header" id="providerTitle">Select Provider</div>
+        <div class="providers-grid" id="providersGrid"></div>
+    </div>
+
+    <div id="formSection" style="display:none">
+        <div class="form-card">
+            <div class="form-group">
+                <label class="form-label" id="accountLabel">Account Number</label>
+                <input type="text" class="form-input" id="accountInput" placeholder="Enter account number">
+                <div class="verify-status success" id="verifyStatus" style="display:none"></div>
+            </div>
+
+            <div class="form-group" id="packageGroup" style="display:none">
+                <label class="form-label">Select Package</label>
+                <div class="packages-grid" id="packagesGrid"></div>
+            </div>
+
+            <div class="form-group" id="amountGroup">
+                <label class="form-label">Amount</label>
+                <input type="number" class="form-input" id="amountInput" placeholder="₦0">
+            </div>
+
+            <button class="pay-btn" id="payBtn" disabled onclick="confirmPayment()">Continue</button>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="bn">
+            <span class="bn-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="finance.html" class="bn active">
+            <span class="bn-icon">💼</span>
+            <span>Finance</span>
+        </a>
+        <a href="reward.html" class="bn">
+            <span class="bn-icon">🎁</span>
+            <span>Rewards</span>
+        </a>
+        <a href="me.html" class="bn">
+            <span class="bn-icon">👤</span>
+            <span>Me</span>
+        </a>
+    </nav>
+
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-icon">💳</div>
+            <div class="modal-title">Confirm Payment</div>
+            <div class="modal-detail" id="confirmDetails"></div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeConfirm()">Cancel</button>
+                <button class="modal-btn primary" onclick="processPayment()">Pay Now</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-icon">✓</div>
+            <div class="modal-title">Payment Successful!</div>
+            <p style="color:#888;margin:16px 0" id="successMsg"></p>
+            <div class="modal-detail" id="receiptDetails"></div>
+            <button class="modal-btn primary" style="width:100%;margin-top:20px" onclick="closeSuccess()">Done</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+    <script>
+        const providers = {
+            electricity: [
+                {name: 'EKEDC', logo: '⚡'},
+                {name: 'IKEDC', logo: '⚡'},
+                {name: 'AEDC', logo: '⚡'},
+                {name: 'PHED', logo: '⚡'},
+                {name: 'IBEDC', logo: '⚡'},
+                {name: 'EEDC', logo: '⚡'}
+            ],
+            tv: [
+                {name: 'DStv', logo: '📺'},
+                {name: 'GOtv', logo: '📺'},
+                {name: 'StarTimes', logo: '📺'}
+            ],
+            internet: [
+                {name: 'Spectranet', logo: '🌐'},
+                {name: 'Smile', logo: '🌐'},
+                {name: 'Swift', logo: '🌐'}
+            ],
+            water: [{name: 'Lagos Water', logo: '💧'}, {name: 'Abuja Water', logo: '💧'}],
+            waste: [{name: 'LAWMA', logo: '🗑️'}, {name: 'Waste Mgmt', logo: '🗑️'}],
+            betting: [{name: 'Bet9ja', logo: '🎲'}, {name: 'SportyBet', logo: '🎲'}],
+            education: [{name: 'JAMB', logo: '🎓'}, {name: 'WAEC', logo: '🎓'}],
+            tax: [{name: 'FIRS', logo: '🏛️'}, {name: 'State Tax', logo: '🏛️'}]
+        };
+
+        const packages = {
+            DStv: [
+                {name: 'Compact', price: 10500},
+                {name: 'Compact Plus', price: 16200},
+                {name: 'Premium', price: 24500},
+                {name: 'Asian', price: 7900}
+            ],
+            GOtv: [
+                {name: 'Jinja', price: 3300},
+                {name: 'Jolli', price: 4150},
+                {name: 'Max', price: 5700}
+            ]
+        };
+
+        const customerNames = {
+            '04567891234': 'Abdulkareem ganiyu',
+            '8012345678': 'adeniyi Johnson',
+            '123456789': 'Michael Babatunde'
+        };
+
+        let currentCategory = '';
+        let currentProvider = '';
+        let selectedPackage = null;
+        let paymentData = {};
+
+        function selectCategory(category) {
+            currentCategory = category;
+            currentProvider = '';
+            selectedPackage = null;
+            
+            document.getElementById('providerSection').style.display = 'block';
+            document.getElementById('formSection').style.display = 'none';
+            document.getElementById('providerTitle').textContent = `Select ${category.charAt(0).toUpperCase() + category.slice(1)} Provider`;
+            
+            const grid = document.getElementById('providersGrid');
+            grid.innerHTML = providers[category].map(p => `
+                <div class="provider-card" onclick="selectProvider('${p.name}')">
+                    <div class="provider-logo">${p.logo}</div>
+                    <div class="provider-name">${p.name}</div>
+                </div>
+            `).join('');
+            
+            window.scrollTo({top: document.getElementById('providerSection').offsetTop - 60, behavior: 'smooth'});
+        }
+
+        function selectProvider(provider) {
+            currentProvider = provider;
+            document.querySelectorAll('.provider-card').forEach(c => c.classList.remove('active'));
+                        
+            document.getElementById('formSection').style.display = 'block';
+            
+            if (packages[provider]) {
+                document.getElementById('packageGroup').style.display = 'block';
+                document.getElementById('amountGroup').style.display = 'none';
+                const grid = document.getElementById('packagesGrid');
+                grid.innerHTML = packages[provider].map((pkg, i) => `
+                    <div class="package-card" onclick="selectPackage(${i})">
+                        <span class="package-name">${pkg.name}</span>
+                        <span class="package-price">₦${pkg.price.toLocaleString()}</span>
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('packageGroup').style.display = 'none';
+                document.getElementById('amountGroup').style.display = 'block';
+            }
+            
+            document.getElementById('accountLabel').textContent = currentCategory === 'electricity' ? 'Meter Number' : 
+                currentCategory === 'tv' ? 'Smartcard Number' : 'Account Number';
+            
+            
+            window.scrollTo({top: document.getElementById('formSection').offsetTop - 60, behavior: 'smooth'});
+        }
+
+        function selectPackage(index) {
+            selectedPackage = packages[currentProvider][index];
+            document.querySelectorAll('.package-card').forEach(c => c.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            updatePayButton();
+        }
+
+        function useSaved(provider, account) {
+            if (provider === 'EKEDC') selectCategory('electricity');
+            else if (provider === 'DStv') selectCategory('tv');
+            else selectCategory('internet');
+            
+            setTimeout(() => {
+                selectProvider(provider);
+                document.getElementById('accountInput').value = account;
+                verifyAccount();
+            }, 100);
+        }
+
+        let verifyTimeout;
+        document.getElementById('accountInput').addEventListener('input', () => {
+            clearTimeout(verifyTimeout);
+            const account = document.getElementById('accountInput').value;
+            if (account.length >= 10) {
+                verifyTimeout = setTimeout(() => verifyAccount(), 1000);
+            }
+            updatePayButton();
+        });
+
+        function verifyAccount() {
+            const account = document.getElementById('accountInput').value;
+            if (customerNames[account]) {
+                document.getElementById('verifyStatus').textContent = `✓ ${customerNames[account]}`;
+                document.getElementById('verifyStatus').style.display = 'block';
+            }
+        }
+
+        document.getElementById('amountInput').addEventListener('input', updatePayButton);
+
+        function updatePayButton() {
+            const account = document.getElementById('accountInput').value;
+            const amount = document.getElementById('amountInput').value;
+            const btn = document.getElementById('payBtn');
+            
+            if (selectedPackage) {
+                btn.disabled = !account || account.length < 10;
+            } else {
+                btn.disabled = !account || !amount || account.length < 10;
+            }
+        }
+
+        function confirmPayment() {
+            const account = document.getElementById('accountInput').value;
+            const amount = selectedPackage ? selectedPackage.price : parseFloat(document.getElementById('amountInput').value);
+            const customerName = customerNames[account] || 'Customer';
+            
+            paymentData = {
+                category: currentCategory,
+                provider: currentProvider,
+                account: account,
+                amount: amount,
+                package: selectedPackage ? selectedPackage.name : null,
+                customer: customerName
+            };
+            
+            document.getElementById('confirmDetails').innerHTML = `
+                <div class="detail-row"><span>Provider</span><span>${currentProvider}</span></div>
+                <div class="detail-row"><span>Account</span><span>${account}</span></div>
+                <div class="detail-row"><span>Customer</span><span>${customerName}</span></div>
+                ${selectedPackage ? `<div class="detail-row"><span>Package</span><span>${selectedPackage.name}</span></div>` : ''}
+                <div class="detail-row" style="border-top:1px solid rgba(0,0,0,.1);margin-top:8px;padding-top:12px;font-weight:700">
+                    <span>Amount</span><span style="color:var(--green)">₦${amount.toLocaleString()}</span>
+                </div>
+            `;
+            
+            document.getElementById('confirmModal').classList.add('show');
+        }
+
+        function closeConfirm() {
+            document.getElementById('confirmModal').classList.remove('show');
+        }
+
+        function processPayment() {
+            closeConfirm();
+            showToast('⏳ Processing payment...');
+            
+            setTimeout(() => {
+                const ref = 'BILL' + Date.now().toString().slice(-8);
+                const cashback = Math.round(paymentData.amount * 0.02);
+                
+                document.getElementById('successMsg').textContent = 
+                    `${paymentData.provider} bill payment successful for ${paymentData.customer}`;
+                
+                document.getElementById('receiptDetails').innerHTML = `
+                    <div class="detail-row"><span>Reference</span><span>${ref}</span></div>
+                    <div class="detail-row"><span>Date</span><span>${new Date().toLocaleString()}</span></div>
+                    <div class="detail-row"><span>Cashback Earned</span><span style="color:var(--green)">₦${cashback}</span></div>
+                `;
+                
+                document.getElementById('successModal').classList.add('show');
+            }, 2000);
+        }
+
+        function closeSuccess() {
+            document.getElementById('successModal').classList.remove('show');
+            window.location.href = 'index.html';
+        }
+
+        function goBack() {
+            window.location.href = 'finance.html';
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        document.querySelectorAll('.modal').forEach(m => {
+            m.addEventListener('click', e => {
+                if (e.target === m) m.classList.remove('show');
+            });
+        });
+
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+        if(darkMode) document.body.classList.add('dark');
+    </script>
+</body>
+</html>

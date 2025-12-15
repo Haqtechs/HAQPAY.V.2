@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savings - HaqPay</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HaqPay">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+    <style>
+        :root{
+          --green:#008037;
+          --green-strong:#00a84e;
+          --bg:#f3f8f5;
+          --card:#fff;
+          --text:#111;
+          --orange:#ff9f1a;
+        }
+
+        body.dark{
+          --bg:#0f1a14;
+          --card:#15261d;
+          --text:#f2f2f2;
+        }
+
+        *{box-sizing:border-box}
+        body{
+          margin:0;
+          font-family:Inter,Arial,sans-serif;
+          background:var(--bg);
+          color:var(--text);
+          padding-bottom:70px;
+        }
+
+        /* HEADER */
+        .header{
+          background:var(--green);
+          color:#fff;
+          padding:16px;
+          display:flex;
+          align-items:center;
+          gap:12px;
+          position:sticky;
+          top:0;
+          z-index:100;
+          box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+        .back-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+          transition:all .2s;
+        }
+        .back-btn:hover{background:rgba(255,255,255,.25)}
+        .header h2{
+          margin:0;
+          font-size:18px;
+          font-weight:700;
+          flex:1;
+        }
+        .icon-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+        }
+
+        /* TOTAL SAVINGS CARD */
+        .total-card{
+          margin:16px;
+          background:linear-gradient(135deg, var(--green-strong) 0%, var(--green) 100%);
+          color:#fff;
+          padding:24px;
+          border-radius:16px;
+          box-shadow:0 4px 12px rgba(0,128,55,.2);
+        }
+        .total-label{
+          font-size:13px;
+          opacity:.9;
+          margin-bottom:8px;
+        }
+        .total-amount{
+          font-size:36px;
+          font-weight:800;
+          margin-bottom:16px;
+        }
+        .total-stats{
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:12px;
+        }
+        .stat-box{
+          background:rgba(255,255,255,.15);
+          padding:12px;
+          border-radius:10px;
+        }
+        .stat-label{
+          font-size:11px;
+          opacity:.9;
+          margin-bottom:4px;
+        }
+        .stat-value{
+          font-size:18px;
+          font-weight:700;
+        }
+
+        /* QUICK ACTIONS */
+        .quick-save{
+          padding:0 16px 16px;
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:10px;
+        }
+        .quick-btn{
+          background:var(--card);
+          border:none;
+          padding:14px;
+          border-radius:12px;
+          cursor:pointer;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          transition:all .2s;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          gap:8px;
+          font-weight:600;
+          color:var(--text);
+        }
+        .quick-btn:hover{
+          transform:translateY(-2px);
+          box-shadow:0 4px 12px rgba(0,0,0,.1);
+        }
+        .quick-btn.primary{
+          background:var(--green);
+          color:#fff;
+        }
+
+        /* SECTION */
+        .section-header{
+          padding:20px 16px 12px;
+          font-size:16px;
+          font-weight:700;
+          color:var(--text);
+        }
+
+        /* ACTIVE SAVINGS */
+        .savings-list{
+          padding:0 16px 16px;
+        }
+        .savings-card{
+          background:var(--card);
+          border-radius:12px;
+          padding:18px;
+          margin-bottom:12px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .savings-card:hover{
+          transform:translateY(-2px);
+          box-shadow:0 4px 12px rgba(0,0,0,.1);
+        }
+        .savings-header{
+          display:flex;
+          align-items:center;
+          gap:12px;
+          margin-bottom:14px;
+        }
+        .savings-icon{
+          width:44px;
+          height:44px;
+          border-radius:50%;
+          background:var(--green);
+          color:#fff;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:22px;
+          flex-shrink:0;
+        }
+        .savings-info{
+          flex:1;
+        }
+        .savings-title{
+          font-weight:700;
+          font-size:15px;
+          margin-bottom:4px;
+        }
+        .savings-meta{
+          font-size:12px;
+          color:#888;
+        }
+        .savings-amount{
+          font-weight:700;
+          font-size:18px;
+          color:var(--green);
+        }
+        .progress-bar{
+          height:8px;
+          background:#e0e0e0;
+          border-radius:4px;
+          overflow:hidden;
+          margin-bottom:10px;
+        }
+        .progress-fill{
+          height:100%;
+          background:linear-gradient(90deg, var(--green-strong), var(--green));
+          border-radius:4px;
+          transition:width .5s;
+        }
+        .progress-text{
+          font-size:12px;
+          color:#888;
+          display:flex;
+          justify-content:space-between;
+        }
+        .maturity-badge{
+          display:inline-block;
+          background:#fff4e6;
+          color:var(--orange);
+          padding:4px 10px;
+          border-radius:12px;
+          font-size:11px;
+          font-weight:600;
+          margin-top:8px;
+        }
+
+        /* SAVINGS TYPES */
+        .types-grid{
+          padding:0 16px 16px;
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:12px;
+        }
+        .type-card{
+          background:var(--card);
+          border-radius:12px;
+          padding:16px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          cursor:pointer;
+          transition:all .2s;
+          text-align:center;
+        }
+        .type-card:hover{
+          transform:translateY(-2px);
+          box-shadow:0 4px 12px rgba(0,0,0,.1);
+        }
+        .type-icon{
+          width:56px;
+          height:56px;
+          border-radius:50%;
+          background:var(--green);
+          color:#fff;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:28px;
+          margin:0 auto 12px;
+        }
+        .type-title{
+          font-weight:700;
+          font-size:14px;
+          margin-bottom:6px;
+        }
+        .type-desc{
+          font-size:12px;
+          color:#888;
+          line-height:1.4;
+        }
+        .type-rate{
+          margin-top:10px;
+          font-size:13px;
+          font-weight:700;
+          color:var(--green);
+        }
+
+        /* EMPTY STATE */
+        .empty-state{
+          text-align:center;
+          padding:40px 20px;
+          color:#888;
+        }
+        .empty-icon{
+          font-size:64px;
+          margin-bottom:16px;
+          opacity:.5;
+        }
+        .empty-title{
+          font-size:18px;
+          font-weight:700;
+          margin-bottom:8px;
+          color:var(--text);
+        }
+        .empty-text{
+          font-size:14px;
+          margin-bottom:20px;
+        }
+        .empty-btn{
+          background:var(--green);
+          color:#fff;
+          border:none;
+          padding:12px 24px;
+          border-radius:10px;
+          font-weight:600;
+          cursor:pointer;
+        }
+
+        /* MODAL */
+        .modal{
+          position:fixed;
+          inset:0;
+          background:rgba(0,0,0,.6);
+          display:none;
+          align-items:center;
+          justify-content:center;
+          z-index:1000;
+          backdrop-filter:blur(4px);
+          padding:20px;
+        }
+        .modal.show{display:flex}
+        .modal-content{
+          background:var(--card);
+          border-radius:16px;
+          width:100%;
+          max-width:400px;
+          max-height:90vh;
+          overflow-y:auto;
+          box-shadow:0 8px 32px rgba(0,0,0,.2);
+        }
+        .modal-header{
+          padding:20px;
+          border-bottom:1px solid rgba(0,0,0,.05);
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+        }
+        .modal-title{
+          font-weight:700;
+          font-size:18px;
+        }
+        .close-btn{
+          background:none;
+          border:none;
+          font-size:24px;
+          cursor:pointer;
+          color:var(--text);
+          width:32px;
+          height:32px;
+          border-radius:50%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+        }
+        .close-btn:hover{background:rgba(0,0,0,.05)}
+        .modal-body{
+          padding:20px;
+        }
+        .form-group{
+          margin-bottom:16px;
+        }
+        .form-label{
+          display:block;
+          font-weight:600;
+          font-size:13px;
+          margin-bottom:8px;
+          color:var(--text);
+        }
+        .form-input{
+          width:100%;
+          padding:12px;
+          border:2px solid #e0e0e0;
+          border-radius:10px;
+          font-size:14px;
+          background:var(--card);
+          color:var(--text);
+        }
+        .form-input:focus{
+          outline:none;
+          border-color:var(--green);
+        }
+        .form-select{
+          width:100%;
+          padding:12px;
+          border:2px solid #e0e0e0;
+          border-radius:10px;
+          font-size:14px;
+          background:var(--card);
+          color:var(--text);
+        }
+        .interest-info{
+          background:#e6f4ec;
+          padding:12px;
+          border-radius:10px;
+          margin-bottom:16px;
+          text-align:center;
+        }
+        .interest-rate{
+          font-size:24px;
+          font-weight:700;
+          color:var(--green);
+          margin-bottom:4px;
+        }
+        .interest-label{
+          font-size:12px;
+          color:#888;
+        }
+        .modal-actions{
+          padding:20px;
+          display:flex;
+          gap:10px;
+        }
+        .btn{
+          flex:1;
+          padding:14px;
+          border-radius:10px;
+          border:none;
+          font-weight:600;
+          cursor:pointer;
+          transition:all .2s;
+          font-size:14px;
+        }
+        .btn-primary{
+          background:var(--green);
+          color:#fff;
+        }
+        .btn-primary:hover{background:var(--green-strong)}
+        .btn-secondary{
+          background:rgba(0,0,0,.05);
+          color:var(--text);
+        }
+
+        /* BOTTOM NAV */
+        .bottom-nav{
+          position:fixed;
+          bottom:0;
+          left:0;
+          right:0;
+          height:60px;
+          background:var(--card);
+          display:flex;
+          border-top:1px solid rgba(0,0,0,.08);
+          box-shadow:0 -2px 10px rgba(0,0,0,.05);
+          z-index:100;
+        }
+        .bn{
+          flex:1;
+          text-decoration:none;
+          color:#666;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          font-size:11px;
+          font-weight:500;
+          transition:all .2s;
+          position:relative;
+        }
+        .bn::before{
+          content:"";
+          position:absolute;
+          top:0;
+          width:0;
+          height:3px;
+          background:var(--green);
+          transition:width .3s;
+        }
+        .bn.active{color:var(--green)}
+        .bn.active::before{width:60%}
+        .bn-icon{
+          font-size:20px;
+          margin-bottom:2px;
+        }
+
+        /* TOAST */
+        .toast{
+          position:fixed;
+          bottom:80px;
+          left:50%;
+          transform:translateX(-50%) translateY(100px);
+          background:var(--card);
+          color:var(--text);
+          padding:14px 20px;
+          border-radius:12px;
+          box-shadow:0 4px 16px rgba(0,0,0,.15);
+          display:flex;
+          align-items:center;
+          gap:10px;
+          z-index:1001;
+          opacity:0;
+          transition:all .3s;
+          max-width:90%;
+          border-left:4px solid var(--green);
+        }
+        .toast.show{
+          transform:translateX(-50%) translateY(0);
+          opacity:1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <button class="back-btn" id="backBtn">←</button>
+        <h2>Savings</h2>
+        <button class="icon-btn" id="themeBtn">🌙</button>
+    </header>
+
+    <!-- TOTAL SAVINGS -->
+    <section class="total-card">
+        <div class="total-label">Total Savings</div>
+        <div class="total-amount" id="totalSavings">₦0.00</div>
+        <div class="total-stats">
+            <div class="stat-box">
+                <div class="stat-label">Interest Earned</div>
+                <div class="stat-value" id="interestEarned">₦0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Active Plans</div>
+                <div class="stat-value" id="activePlans">0</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUICK ACTIONS -->
+    <div class="quick-save">
+        <button class="quick-btn primary" id="quickSaveBtn">
+            <span>💰</span> Quick Save
+        </button>
+        <button class="quick-btn" id="withdrawBtn">
+            <span>💸</span> Withdraw
+        </button>
+    </div>
+
+    <!-- ACTIVE SAVINGS -->
+    <div class="section-header">Active Savings Plans</div>
+    <div class="savings-list" id="activeSavings">
+        <!-- Active savings will be loaded here -->
+    </div>
+
+    <!-- SAVINGS TYPES -->
+    <div class="section-header">Start Saving</div>
+    <div class="types-grid">
+        <div class="type-card" onclick="openCreateModal('fixed')">
+            <div class="type-icon">🔒</div>
+            <div class="type-title">Fixed Savings</div>
+            <div class="type-desc">Lock funds for higher returns</div>
+            <div class="type-rate">12% p.a.</div>
+        </div>
+        <div class="type-card" onclick="openCreateModal('goal')">
+            <div class="type-icon">🎯</div>
+            <div class="type-title">Goal Savings</div>
+            <div class="type-desc">Save for specific targets</div>
+            <div class="type-rate">10% p.a.</div>
+        </div>
+        <div class="type-card" onclick="openCreateModal('flexible')">
+            <div class="type-icon">💎</div>
+            <div class="type-title">Flexible Savings</div>
+            <div class="type-desc">Withdraw anytime</div>
+            <div class="type-rate">8% p.a.</div>
+        </div>
+        <div class="type-card" onclick="openCreateModal('vault')">
+            <div class="type-icon">🔐</div>
+            <div class="type-title">Vault</div>
+            <div class="type-desc">Hide money from yourself</div>
+            <div class="type-rate">15% p.a.</div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bn">
+            <span class="bn-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="finance.html" class="bn active">
+            <span class="bn-icon">💼</span>
+            <span>Finance</span>
+        </a>
+        <a href="reward.html" class="bn">
+            <span class="bn-icon">🎁</span>
+            <span>Rewards</span>
+        </a>
+        <a href="me.html" class="bn">
+            <span class="bn-icon">👤</span>
+            <span>Me</span>
+        </a>
+    </nav>
+
+    <!-- CREATE SAVINGS MODAL -->
+    <div class="modal" id="createModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Create Savings Plan</div>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="interest-info">
+                    <div class="interest-rate" id="modalRate">12%</div>
+                    <div class="interest-label">Interest per annum</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Plan Name</label>
+                    <input type="text" class="form-input" id="planName" placeholder="e.g., Emergency Fund">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Target Amount</label>
+                    <input type="number" class="form-input" id="targetAmount" placeholder="₦0">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Initial Deposit</label>
+                    <input type="number" class="form-input" id="initialDeposit" placeholder="₦0">
+                </div>
+
+                <div class="form-group" id="durationGroup">
+                    <label class="form-label">Duration</label>
+                    <select class="form-select" id="duration">
+                        <option value="30">30 Days</option>
+                        <option value="60">60 Days</option>
+                        <option value="90">90 Days</option>
+                        <option value="180">180 Days</option>
+                        <option value="365">1 Year</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Auto-Save Frequency</label>
+                    <select class="form-select" id="frequency">
+                        <option value="none">No Auto-Save</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="createBtn">Create Plan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <span id="toastMsg"></span>
+    </div>
+
+    <script>
+        // Mock savings data
+        let activeSavingsData = [
+            {
+                id: 1,
+                type: 'goal',
+                icon: '🎯',
+                name: 'New Laptop Fund',
+                current: 125000,
+                target: 250000,
+                interest: 10,
+                maturity: '2025-03-15'
+            },
+            {
+                id: 2,
+                type: 'fixed',
+                icon: '🔒',
+                name: 'Emergency Savings',
+                current: 85000,
+                target: 100000,
+                interest: 12,
+                maturity: '2025-02-20'
+            },
+            {
+                id: 3,
+                type: 'vault',
+                icon: '🔐',
+                name: 'Hidden Stash',
+                current: 45000,
+                target: 50000,
+                interest: 15,
+                maturity: '2025-06-10'
+            }
+        ];
+
+        let currentModalType = 'fixed';
+
+        // Calculate totals
+        function calculateTotals() {
+            const total = activeSavingsData.reduce((sum, s) => sum + s.current, 0);
+            const interest = activeSavingsData.reduce((sum, s) => sum + (s.current * s.interest / 100 / 12), 0);
+            
+            document.getElementById('totalSavings').textContent = `₦${total.toLocaleString()}.00`;
+            document.getElementById('interestEarned').textContent = `₦${Math.round(interest).toLocaleString()}`;
+            document.getElementById('activePlans').textContent = activeSavingsData.length;
+        }
+
+        
+        // Load active savings
+        function loadActiveSavings() {
+            const list = document.getElementById('activeSavings');
+            
+            if (activeSavingsData.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🏦</div>
+                        <div class="empty-title">No Active Savings</div>
+                        <div class="empty-text">Start saving today and watch your money grow!</div>
+                        <button class="empty-btn" onclick="openCreateModal('goal')">Create Savings Plan</button>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = activeSavingsData.map(s => {
+                const progress = (s.current / s.target) * 100;
+                const daysLeft = Math.ceil((new Date(s.maturity) - new Date()) / (1000 * 60 * 60 * 24));
+                
+                return `
+                    <div class="savings-card" onclick="viewSavings(${s.id})">
+                        <div class="savings-header">
+                            <div class="savings-icon">${s.icon}</div>
+                            <div class="savings-info">
+                                <div class="savings-title">${s.name}</div>
+                                <div class="savings-meta">${s.interest}% interest • ${s.type}</div>
+                            </div>
+                            <div class="savings-amount">₦${s.current.toLocaleString()}</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width:${progress}%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>${Math.round(progress)}% of goal</span>
+                            <span>₦${s.target.toLocaleString()}</span>
+                        </div>
+                        <div class="maturity-badge">⏱️ Matures in ${daysLeft} days</div>
+                    </div>
+                `;
+            }).join('');
+
+            calculateTotals();
+        }
+
+        // Open create modal
+        function openCreateModal(type) {
+            currentModalType = type;
+            const modal = document.getElementById('createModal');
+            const title = document.getElementById('modalTitle');
+            const rate = document.getElementById('modalRate');
+            const durationGroup = document.getElementById('durationGroup');
+            
+            const rates = {
+                fixed: '12%',
+                goal: '10%',
+                flexible: '8%',
+                vault: '15%'
+            };
+            
+            const titles = {
+                fixed: 'Create Fixed Savings',
+                goal: 'Create Goal Savings',
+                flexible: 'Create Flexible Savings',
+                vault: 'Create Vault'
+            };
+            
+            title.textContent = titles[type];
+            rate.textContent = rates[type];
+            
+            // Hide duration for flexible savings
+            durationGroup.style.display = type === 'flexible' ? 'none' : 'block';
+            
+            modal.classList.add('show');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('createModal').classList.remove('show');
+            // Reset form
+            document.getElementById('planName').value = '';
+            document.getElementById('targetAmount').value = '';
+            document.getElementById('initialDeposit').value = '';
+        }
+
+        // Create savings plan
+        function createPlan() {
+            const name = document.getElementById('planName').value;
+            const target = parseInt(document.getElementById('targetAmount').value);
+            const initial = parseInt(document.getElementById('initialDeposit').value);
+            
+            if (!name || !target || !initial) {
+                showToast('❌ Please fill all required fields');
+                return;
+            }
+            
+            if (initial > target) {
+                showToast('❌ Initial deposit cannot exceed target');
+                return;
+            }
+            
+            const icons = {
+                fixed: '🔒',
+                goal: '🎯',
+                flexible: '💎',
+                vault: '🔐'
+            };
+            
+            const interests = {
+                fixed: 12,
+                goal: 10,
+                flexible: 8,
+                vault: 15
+            };
+            
+            
+            const duration = parseInt(document.getElementById('duration').value);
+            const maturityDate = new Date();
+            maturityDate.setDate(maturityDate.getDate() + duration);
+            
+            const newSaving = {
+                id: Date.now(),
+                type: currentModalType,
+                icon: icons[currentModalType],
+                name: name,
+                current: initial,
+                target: target,
+                interest: interests[currentModalType],
+                maturity: maturityDate.toISOString().split('T')[0]
+            };
+            
+            activeSavingsData.unshift(newSaving);
+            loadActiveSavings();
+            closeModal();
+            showToast(`✅ ${name} created successfully!`);
+        }
+
+        // View savings details
+        function viewSavings(id) {
+            const saving = activeSavingsData.find(s => s.id === id);
+            if (saving) {
+                showToast(`📊 Viewing ${saving.name}...`);
+            }
+        }
+
+        // Quick save
+        function quickSave() {
+            showToast('💰 Quick save: Enter amount...');
+        }
+
+        // Withdraw
+        function withdraw() {
+            showToast('💸 Select savings plan to withdraw from...');
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Dark mode
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+        if(darkMode) document.body.classList.add('dark');
+
+        function toggleDark() {
+            document.body.classList.toggle('dark');
+            darkMode = !darkMode;
+            localStorage.setItem('darkMode', darkMode);
+            showToast(darkMode ? '🌙 Dark mode on' : '☀️ Light mode on');
+        }
+
+        // Event listeners
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = 'finance.html';
+        });
+
+        document.getElementById('themeBtn').addEventListener('click', toggleDark);
+        document.getElementById('quickSaveBtn').addEventListener('click', quickSave);
+        document.getElementById('withdrawBtn').addEventListener('click', withdraw);
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+        document.getElementById('cancelBtn').addEventListener('click', closeModal);
+        document.getElementById('createBtn').addEventListener('click', createPlan);
+
+        // Close modal on backdrop click
+        document.getElementById('createModal').addEventListener('click', (e) => {
+            if (e.target.id === 'createModal') {
+                closeModal();
+            }
+        });
+
+        // Initialize
+        loadActiveSavings();
+    </script>
+
+</body>
+</html>

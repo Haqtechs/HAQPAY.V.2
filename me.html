@@ -1,0 +1,818 @@
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Me - HaqPay</title> 
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HaqPay">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180"> 
+    <style>  
+        :root{  
+          --green:#008037;  
+          --green-strong:#00a84e;  
+          --bg:#f3f8f5;  
+          --card:#fff;  
+          --text:#111;  
+        }  body.dark{  
+      --bg:#0f1a14;  
+      --card:#15261d;  
+      --text:#f2f2f2;  
+    }  
+
+    *{box-sizing:border-box}  
+    body{  
+      margin:0;  
+      font-family:Inter,Arial,sans-serif;  
+      background:var(--bg);  
+      color:var(--text);  
+      padding-bottom:70px;  
+    }  
+
+    /* HEADER */  
+    .header{  
+      background:var(--green);  
+      color:#fff;  
+      padding:16px;  
+      display:flex;  
+      align-items:center;  
+      justify-content:space-between;  
+      position:sticky;  
+      top:0;  
+      z-index:100;  
+      box-shadow:0 2px 8px rgba(0,0,0,.1);  
+    }  
+    .header h2{  
+      margin:0;  
+      font-size:18px;  
+      font-weight:700;  
+    }  
+    .icon-btn{  
+      background:rgba(255,255,255,.15);  
+      border:none;  
+      color:#fff;  
+      width:36px;  
+      height:36px;  
+      border-radius:8px;  
+      cursor:pointer;  
+      font-size:18px;  
+    }  
+
+    /* PROFILE CARD */  
+    .profile-card{  
+      margin:16px;  
+      background:linear-gradient(135deg, var(--green-strong) 0%, var(--green) 100%);  
+      color:#fff;  
+      padding:24px;  
+      border-radius:16px;  
+      box-shadow:0 4px 12px rgba(0,128,55,.2);  
+      text-align:center;  
+    }  
+    .profile-avatar{  
+      width:80px;  
+      height:80px;  
+      border-radius:50%;  
+      border:4px solid rgba(255,255,255,.3);  
+      margin:0 auto 12px;  
+      object-fit:cover;  
+    }  
+    .profile-name{  
+      font-size:20px;  
+      font-weight:700;  
+      margin-bottom:6px;  
+    }  
+    .profile-tier{  
+      display:inline-block;  
+      background:rgba(255,255,255,.2);  
+      padding:6px 16px;  
+      border-radius:20px;  
+      font-size:12px;  
+      font-weight:600;  
+      margin-bottom:16px;  
+    }  
+    .profile-stats{  
+      display:grid;  
+      grid-template-columns:1fr 1fr 1fr;  
+      gap:16px;  
+      margin-bottom:16px;  
+    }  
+    .stat{  
+      text-align:center;  
+    }  
+    .stat-value{  
+      font-size:18px;  
+      font-weight:700;  
+      margin-bottom:4px;  
+    }  
+    .stat-label{  
+      font-size:11px;  
+      opacity:.9;  
+    }  
+    .edit-profile-btn{  
+      background:rgba(255,255,255,.95);  
+      color:var(--green);  
+      border:none;  
+      padding:12px 24px;  
+      border-radius:10px;  
+      font-weight:600;  
+      cursor:pointer;  
+      font-size:14px;  
+    }  
+
+    /* VERIFICATION BANNER */  
+    .verification-banner{  
+      margin:0 16px 16px;  
+      background:#fff4e6;  
+      padding:16px;  
+      border-radius:12px;  
+      display:flex;  
+      align-items:center;  
+      gap:12px;  
+    }  
+    .verification-banner.verified{  
+      background:#e6f4ec;  
+    }  
+    .verification-icon{  
+      font-size:28px;  
+      flex-shrink:0;  
+    }  
+    .verification-info{  
+      flex:1;  
+    }  
+    .verification-title{  
+      font-weight:700;  
+      font-size:14px;  
+      margin-bottom:4px;  
+    }  
+    .verification-desc{  
+      font-size:12px;  
+      color:#888;  
+    }  
+    .verification-btn{  
+      background:var(--green);  
+      color:#fff;  
+      border:none;  
+      padding:8px 16px;  
+      border-radius:8px;  
+      font-weight:600;  
+      cursor:pointer;  
+      font-size:12px;  
+      white-space:nowrap;  
+    }  
+
+    /* SECTION */  
+    .section-title{  
+      padding:20px 16px 12px;  
+      font-size:14px;  
+      font-weight:700;  
+      color:#888;  
+      text-transform:uppercase;  
+      letter-spacing:.5px;  
+    }  
+
+    /* MENU SECTION */  
+    .menu-section{  
+      margin:0 16px 16px;  
+      background:var(--card);  
+      border-radius:12px;  
+      box-shadow:0 2px 6px rgba(0,0,0,.05);  
+      overflow:hidden;  
+    }  
+    .menu-item{  
+      display:flex;  
+      align-items:center;  
+      padding:16px;  
+      border-bottom:1px solid rgba(0,0,0,.05);  
+      cursor:pointer;  
+      transition:all .2s;  
+    }  
+    .menu-item:last-child{border:none}  
+    .menu-item:hover{background:rgba(0,128,55,.03)}  
+    .menu-item:active{background:rgba(0,128,55,.05)}  
+    .menu-icon{  
+      width:40px;  
+      height:40px;  
+      border-radius:50%;  
+      background:rgba(0,128,55,.1);  
+      display:flex;  
+      align-items:center;  
+      justify-content:center;  
+      font-size:18px;  
+      margin-right:14px;  
+      flex-shrink:0;  
+    }  
+    .menu-content{  
+      flex:1;  
+    }  
+    .menu-title{  
+      font-weight:600;  
+      font-size:14px;  
+      margin-bottom:3px;  
+    }  
+    .menu-subtitle{  
+      font-size:12px;  
+      color:#888;  
+    }  
+    .menu-arrow{  
+      color:#ccc;  
+      font-size:16px;  
+    }  
+    .menu-badge{  
+      background:#ff4757;  
+      color:#fff;  
+      padding:3px 8px;  
+      border-radius:10px;  
+      font-size:11px;  
+      font-weight:600;  
+      margin-right:8px;  
+    }  
+    .menu-toggle{  
+      position:relative;  
+      width:48px;  
+      height:28px;  
+      background:#ccc;  
+      border-radius:14px;  
+      cursor:pointer;  
+      transition:all .3s;  
+    }  
+    .menu-toggle.active{background:var(--green)}  
+    .menu-toggle::before{  
+      content:"";  
+      position:absolute;  
+      width:22px;  
+      height:22px;  
+      background:#fff;  
+      border-radius:50%;  
+      top:3px;  
+      left:3px;  
+      transition:all .3s;  
+    }  
+    .menu-toggle.active::before{  
+      left:23px;  
+    }  
+
+    /* LOGOUT BUTTON */  
+    .logout-section{  
+      margin:0 16px 16px;  
+    }  
+    .logout-btn{  
+      width:100%;  
+      background:#ff6b6b;  
+      color:#fff;  
+      border:none;  
+      padding:16px;  
+      border-radius:12px;  
+      font-weight:600;  
+      font-size:14px;  
+      cursor:pointer;  
+      transition:all .2s;  
+      display:flex;  
+      align-items:center;  
+      justify-content:center;  
+      gap:8px;  
+    }  
+    .logout-btn:hover{background:#ff5252}  
+    .logout-btn:active{transform:scale(.98)}  
+
+    /* VERSION */  
+    .version-info{  
+      text-align:center;  
+      padding:20px;  
+      font-size:12px;  
+      color:#888;  
+    }  
+
+    /* BOTTOM NAV */  
+    .bottom-nav{  
+      position:fixed;  
+      bottom:0;  
+      left:0;  
+      right:0;  
+      height:60px;  
+      background:var(--card);  
+      display:flex;  
+      border-top:1px solid rgba(0,0,0,.08);  
+      box-shadow:0 -2px 10px rgba(0,0,0,.05);  
+      z-index:100;  
+    }  
+    .bn{  
+      flex:1;  
+      text-decoration:none;  
+      color:#666;  
+      display:flex;  
+      flex-direction:column;  
+      align-items:center;  
+      justify-content:center;  
+      font-size:11px;  
+      font-weight:500;  
+      transition:all .2s;  
+      position:relative;  
+    }  
+    .bn::before{  
+      content:"";  
+      position:absolute;  
+      top:0;  
+      width:0;  
+      height:3px;  
+      background:var(--green);  
+      transition:width .3s;  
+    }  
+    .bn.active{color:var(--green)}  
+    .bn.active::before{width:60%}  
+    .bn-icon{  
+      font-size:20px;  
+      margin-bottom:2px;  
+    }  
+
+    /* MODAL */  
+    .modal{  
+      position:fixed;  
+      inset:0;  
+      background:rgba(0,0,0,.6);  
+      display:none;  
+      align-items:center;  
+      justify-content:center;  
+      z-index:1000;  
+      backdrop-filter:blur(4px);  
+      padding:20px;  
+    }  
+    .modal.show{display:flex}  
+    .modal-content{  
+      background:var(--card);  
+      border-radius:16px;  
+      width:100%;  
+      max-width:360px;  
+      text-align:center;  
+      box-shadow:0 8px 32px rgba(0,0,0,.2);  
+      padding:24px;  
+    }  
+    .modal-icon{  
+      font-size:64px;  
+      margin-bottom:16px;  
+    }  
+    .modal-title{  
+      font-weight:700;  
+      font-size:18px;  
+      margin-bottom:12px;  
+    }  
+    .modal-text{  
+      font-size:14px;  
+      color:#888;  
+      margin-bottom:24px;  
+    }  
+    .modal-actions{  
+      display:flex;  
+      gap:10px;  
+    }  
+    .modal-btn{  
+      flex:1;  
+      padding:14px;  
+      border-radius:10px;  
+      border:none;  
+      font-weight:600;  
+      cursor:pointer;  
+      transition:all .2s;  
+    }  
+    .modal-btn.primary{  
+      background:#ff6b6b;  
+      color:#fff;  
+    }  
+    .modal-btn.secondary{  
+      background:rgba(0,0,0,.05);  
+      color:var(--text);  
+    }  
+
+    /* TOAST */  
+    .toast{  
+      position:fixed;  
+      bottom:80px;  
+      left:50%;  
+      transform:translateX(-50%) translateY(100px);  
+      background:var(--card);  
+      color:var(--text);  
+      padding:14px 20px;  
+      border-radius:12px;  
+      box-shadow:0 4px 16px rgba(0,0,0,.15);  
+      display:flex;  
+      align-items:center;  
+      gap:10px;  
+      z-index:1001;  
+      opacity:0;  
+      transition:all .3s;  
+      max-width:90%;  
+      border-left:4px solid var(--green);  
+    }  
+    .toast.show{  
+      transform:translateX(-50%) translateY(0);  
+      opacity:1;  
+    }  
+</style>
+
+</head>  
+<!-- CHANGE PIN MODAL -->
+<div class="modal" id="pinModal">
+  <div class="modal-content">
+    <div class="modal-title" style="color:#008037;">Change PIN</div>
+
+    <input type="password" placeholder="Current PIN" style="width:100%;padding:12px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;">
+    <input type="password" placeholder="New PIN" style="width:100%;padding:12px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;">
+    <input type="password" placeholder="Confirm New PIN" style="width:100%;padding:12px;margin-bottom:16px;border-radius:8px;border:1px solid #ccc;">
+
+    <button class="modal-btn" style="background:#008037;color:#fff;width:100%;" onclick="closePinModal()">Update PIN</button>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="modal" id="passwordModal">
+  <div class="modal-content">
+    <div class="modal-title" style="color:#008037;">Change Password</div>
+
+    <input type="password" placeholder="Current Password" style="width:100%;padding:12px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;">
+    <input type="password" placeholder="New Password" style="width:100%;padding:12px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;">
+    <input type="password" placeholder="Confirm New Password" style="width:100%;padding:12px;margin-bottom:16px;border-radius:8px;border:1px solid #ccc;">
+
+    <button class="modal-btn" style="background:#008037;color:#fff;width:100%;" onclick="closePasswordModal()">Update Password</button>
+  </div>
+</div>
+<body>  <!-- HEADER -->  
+<header class="header">  
+    <h2>Profile</h2>  
+    <button class="icon-btn" id="notificationBtn">🔔</button>  
+</header>  
+
+<!-- PROFILE CARD -->  
+<section class="profile-card">  
+    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Haq" class="profile-avatar" id="profileAvatar">  
+    <div class="profile-name">Haq</div>  
+    <div class="profile-tier">🏆 Gold Member</div>  
+    <div class="profile-stats">  
+        <div class="stat">  
+            <div class="stat-value">2,850</div>  
+            <div class="stat-label">Points</div>  
+        </div>  
+        <div class="stat">  
+            <div class="stat-value">47</div>  
+            <div class="stat-label">Transactions</div>  
+        </div>  
+        <div class="stat">  
+            <div class="stat-value">5</div>  
+            <div class="stat-label">Referrals</div>  
+        </div>  
+    </div>  
+    <button class="edit-profile-btn" id="editProfileBtn">Edit Profile</button>  
+</section>  
+
+
+<!-- VERIFICATION BANNER -->  
+<div class="verification-banner verified">  
+    <div class="verification-icon">✅</div>  
+    <div class="verification-info">  
+        <div class="verification-title">Account Verified</div>  
+        <div class="verification-desc">Your BVN is verified • Tier 2</div>  
+    </div>  
+    <button class="verification-btn" onclick="upgradeAccount()">Upgrade</button>  
+</div>  
+
+<!-- ACCOUNT SECTION -->  
+<div class="section-title">Account</div>  
+<div class="menu-section">  
+    <div class="menu-item" onclick="navigate('Account Details')">  
+        <div class="menu-icon">👤</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Account Details</div>  
+            <div class="menu-subtitle">Account number, BVN, limits</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+    <div class="menu-item" onclick="navigate('Linked Accounts')">  
+        <div class="menu-icon">🏦</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Linked Bank Accounts</div>  
+            <div class="menu-subtitle">Manage linked accounts</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+    <div class="menu-item" onclick="window.location.href='card.html'">
+        <div class="menu-icon">💳</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Cards</div>  
+            <div class="menu-subtitle">Virtual & physical cards</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+    <div class="menu-item" onclick="window.location.href='history.html'">  
+        <div class="menu-icon">📜</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Transaction History</div>  
+            <div class="menu-subtitle">View all transactions</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+</div>  
+
+<!-- SECURITY SECTION -->  
+<div class="section-title">Security & Privacy</div>  
+<div class="menu-section">  
+    <div class="menu-item" onclick="openPinModal()">
+        <div class="menu-icon">🔐</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Change PIN</div>  
+            <div class="menu-subtitle">Update your transaction PIN</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+    <div class="menu-item" onclick="openPasswordModal()">
+        <div class="menu-icon">🔑</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Change Password</div>  
+            <div class="menu-subtitle">Update login password</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+    <div class="menu-item" onclick="toggleBiometric()">  
+        <div class="menu-icon">👆</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Biometric Login</div>  
+            <div class="menu-subtitle">Use fingerprint/face ID</div>  
+        </div>  
+        <div class="menu-toggle active" id="biometricToggle"></div>  
+    </div>  
+    <div class="menu-item" onclick="navigate('Security Center')">  
+        <div class="menu-icon">🛡️</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Security Center</div>  
+            <div class="menu-subtitle">Manage security settings</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+</div>  
+
+<!-- SETTINGS SECTION -->  
+<div class="section-title">Settings</div>  
+<div class="menu-section">  
+    <div class="menu-item" onclick="toggleDarkMode()">  
+        <div class="menu-icon">🌙</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Dark Mode</div>  
+            <div class="menu-subtitle">Toggle dark theme</div>  
+        </div>  
+        <div class="menu-toggle" id="darkModeToggle"></div>  
+    </div>  
+    <div class="menu-item" onclick="toggleNotifications()">  
+        <div class="menu-icon">🔔</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Notifications</div>  
+            <div class="menu-subtitle">Push notifications</div>  
+        </div>  
+        <div class="menu-toggle active" id="notificationsToggle"></div>  
+    </div>  
+    <div class="menu-item" onclick="navigate('Language')">  
+        <div class="menu-icon">🌐</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Language</div>  
+            <div class="menu-subtitle">English</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+    <div class="menu-item" onclick="navigate('Currency')">  
+        <div class="menu-icon">💱</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Currency</div>  
+            <div class="menu-subtitle">Nigerian Naira (₦)</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+</div>  
+
+<!-- HELP & SUPPORT -->  
+<div class="section-title">Help & Support</div>  
+<div class="menu-section">  
+    <div class="menu-item" onclick="navigate('Help Center')">  
+        <div class="menu-icon">❓</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Help Center</div>  
+            <div class="menu-subtitle">FAQs & guides</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+    <div class="menu-item" onclick="contactSupport()">  
+        <div class="menu-icon">💬</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Contact Support</div>  
+            <div class="menu-subtitle">Chat, email, or call</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+    <div class="menu-item" onclick="navigate('Report Issue')">  
+        <div class="menu-icon">🐛</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Report an Issue</div>  
+            <div class="menu-subtitle">Report bugs or problems</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+</div>  
+
+<!-- ABOUT -->  
+<div class="section-title">About</div>  
+<div class="menu-section">  
+    <div class="menu-item" onclick="navigate('Invite Friends')">  
+        <div class="menu-icon">🎁</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Invite Friends</div>  
+            <div class="menu-subtitle">Earn rewards together</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+    <div class="menu-item" onclick="navigate('Rate Us')">  
+        <div class="menu-icon">⭐</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Rate Us</div>  
+            <div class="menu-subtitle">Rate on app store</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+    <div class="menu-item" onclick="navigate('Terms & Conditions')">  
+        <div class="menu-icon">📄</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Terms & Conditions</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+    <div class="menu-item" onclick="navigate('Privacy Policy')">  
+        <div class="menu-icon">🔒</div>  
+        <div class="menu-content">  
+            <div class="menu-title">Privacy Policy</div>  
+        </div>  
+        <div class="menu-arrow">→</div>  
+    </div>  
+</div>  
+
+<!-- LOGOUT -->  
+<div class="logout-section">  
+    <button class="logout-btn" id="logoutBtn">  
+        <span>🚪</span> Logout  
+    </button>  
+</div>  
+
+<!-- VERSION -->  
+<div class="version-info">  
+    HaqPay v1.2.0 • Build 2025.12.14<br>  
+    Made with ❤️ in Nigeria  
+</div>  
+
+<!-- BOTTOM NAV -->  
+<nav class="bottom-nav">  
+    <a href="index.html" class="bn">  
+        <span class="bn-icon">🏠</span>  
+        <span>Home</span>  
+    </a>  
+    <a href="finance.html" class="bn">  
+        <span class="bn-icon">💼</span>  
+        <span>Finance</span>  
+    </a>  
+    <a href="reward.html" class="bn">  
+        <span class="bn-icon">🎁</span>  
+        <span>Rewards</span>  
+    </a>  
+    <a href="me.html" class="bn active">  
+        <span class="bn-icon">👤</span>  
+        <span>Me</span>  
+    </a>  
+</nav>  
+
+<!-- LOGOUT MODAL -->  
+<div class="modal" id="logoutModal">  
+    <div class="modal-content">  
+        <div class="modal-icon">👋</div>  
+        <div class="modal-title">Logout</div>  
+        <div class="modal-text">Are you sure you want to logout?</div>  
+        <div class="modal-actions">  
+            <button class="modal-btn secondary" id="cancelLogout">Cancel</button>  
+            <button class="modal-btn primary" id="confirmLogout">Logout</button>  
+        </div>  
+    </div>  
+</div>  
+
+<!-- TOAST -->  
+<div class="toast" id="toast">  
+    <span id="toastMsg"></span>  
+</div>  
+
+<script>  
+   // Initialize toggles  
+    let biometricEnabled = true;  
+    let notificationsEnabled = true;  
+    let darkMode = localStorage.getItem('darkMode') === 'true';  
+
+    // Set initial dark mode  
+    if(darkMode) {  
+        document.body.classList.add('dark');  
+        document.getElementById('darkModeToggle').classList.add('active');  
+    }  
+
+    // Toggle dark mode  
+    function toggleDarkMode() {  
+        document.body.classList.toggle('dark');  
+        darkMode = !darkMode;  
+        localStorage.setItem('darkMode', darkMode);  
+        document.getElementById('darkModeToggle').classList.toggle('active');  
+        showToast(darkMode ? '🌙 Dark mode enabled' : '☀️ Light mode enabled');  
+    }  
+
+    // Toggle biometric  
+    function toggleBiometric() {  
+        biometricEnabled = !biometricEnabled;  
+        document.getElementById('biometricToggle').classList.toggle('active');  
+        showToast(biometricEnabled ? '👆 Biometric login enabled' : '👆 Biometric login disabled');  
+    }  
+
+    // Toggle notifications  
+    function toggleNotifications() {  
+        notificationsEnabled = !notificationsEnabled;  
+        document.getElementById('notificationsToggle').classList.toggle('active');  
+        showToast(notificationsEnabled ? '🔔 Notifications enabled' : '🔕 Notifications disabled');  
+    }  
+
+    // Navigate to section  
+    function navigate(section) {  
+        showToast(`📱 Opening ${section}...`);  
+    }  
+
+    // Upgrade account  
+    function upgradeAccount() {  
+        showToast('🏆 Upgrade to Tier 3 for higher limits!');  
+    }  
+
+    // Contact support  
+    function contactSupport() {  
+        window.location.href = 'https://wa.me/2347084160928?text=Hello%20HaqPay%20Support';  
+    }  
+
+    // Edit profile  
+    document.getElementById('editProfileBtn').addEventListener('click', () => {  
+        showToast('✏️ Edit profile...');  
+    });  
+
+    // Notifications  
+    document.getElementById('notificationBtn').addEventListener('click', () => {  
+        showToast('🔔 No new notifications');  
+    });  
+
+    // Logout  
+    document.getElementById('logoutBtn').addEventListener('click', () => {  
+        document.getElementById('logoutModal').classList.add('show');  
+    });  
+
+    document.getElementById('cancelLogout').addEventListener('click', () => {  
+        document.getElementById('logoutModal').classList.remove('show');  
+    });  
+
+    document.getElementById('confirmLogout').addEventListener('click', () => {  
+        document.getElementById('logoutModal').classList.remove('show');  
+        showToast('👋 Logging out...');  
+        setTimeout(() => {  
+            window.location.href = 'index.html';  
+        }, 1500);  
+    });  
+
+    // Close modal on backdrop  
+    document.getElementById('logoutModal').addEventListener('click', (e) => {  
+        if (e.target.id === 'logoutModal') {  
+            e.target.classList.remove('show');  
+        }  
+    });  
+
+    // Toast notification  
+    function showToast(message) {  
+        const toast = document.getElementById('toast');  
+        const toastMsg = document.getElementById('toastMsg');  
+        toastMsg.textContent = message;  
+        toast.classList.add('show');  
+          
+        setTimeout(() => {  
+            toast.classList.remove('show');  
+        }, 3000);  
+    }  
+    function openPinModal() {
+  document.getElementById('pinModal').classList.add('show');
+}
+
+function closePinModal() {
+  document.getElementById('pinModal').classList.remove('show');
+  showToast('🔐 PIN updated successfully');
+}
+
+function openPasswordModal() {
+  document.getElementById('passwordModal').classList.add('show');
+}
+
+function closePasswordModal() {
+  document.getElementById('passwordModal').classList.remove('show');
+  showToast('🔑 Password updated successfully');
+}
+</script>
+
+</body>  
+</html>

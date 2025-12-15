@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cards - HaqPay</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HaqPay">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+    <style>
+        :root{
+          --green:#008037;
+          --green-strong:#00a84e;
+          --bg:#f3f8f5;
+          --card:#fff;
+          --text:#111;
+        }
+
+        body.dark{
+          --bg:#0f1a14;
+          --card:#15261d;
+          --text:#f2f2f2;
+        }
+
+        *{box-sizing:border-box}
+        body{
+          margin:0;
+          font-family:Inter,Arial,sans-serif;
+          background:var(--bg);
+          color:var(--text);
+          padding-bottom:70px;
+        }
+
+        .header{
+          background:var(--green);
+          color:#fff;
+          padding:16px;
+          display:flex;
+          align-items:center;
+          gap:12px;
+          position:sticky;
+          top:0;
+          z-index:100;
+          box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+        .back-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+        }
+        .header h2{
+          margin:0;
+          font-size:18px;
+          font-weight:700;
+          flex:1;
+        }
+        .icon-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+        }
+
+        /* CARD CAROUSEL */
+        .card-carousel{
+          padding:20px 16px;
+          overflow-x:auto;
+          -webkit-overflow-scrolling:touch;
+        }
+        .card-carousel::-webkit-scrollbar{display:none}
+        .cards-container{
+          display:flex;
+          gap:16px;
+        }
+        .bank-card{
+          min-width:320px;
+          height:200px;
+          border-radius:16px;
+          padding:24px;
+          position:relative;
+          overflow:hidden;
+          cursor:pointer;
+          transition:all .3s;
+          box-shadow:0 8px 24px rgba(0,0,0,.15);
+        }
+        .bank-card:hover{
+          transform:translateY(-4px);
+          box-shadow:0 12px 32px rgba(0,0,0,.2);
+        }
+        .bank-card.virtual{
+          background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .bank-card.physical{
+          background:linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .bank-card.add-new{
+          background:var(--card);
+          border:3px dashed #ccc;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          color:var(--text);
+        }
+        .card-chip{
+          width:50px;
+          height:40px;
+          border-radius:8px;
+          background:linear-gradient(135deg, #ffd700, #ffed4e);
+          margin-bottom:24px;
+        }
+        .card-number{
+          font-size:22px;
+          font-weight:700;
+          letter-spacing:4px;
+          color:#fff;
+          margin-bottom:16px;
+        }
+        .card-footer{
+          display:flex;
+          justify-content:space-between;
+          align-items:flex-end;
+        }
+        .card-holder{
+          font-size:12px;
+          opacity:.9;
+          margin-bottom:4px;
+          color:#fff;
+        }
+        .card-name{
+          font-size:14px;
+          font-weight:700;
+          color:#fff;
+        }
+        .card-expiry{
+          font-size:14px;
+          font-weight:700;
+          color:#fff;
+        }
+        .card-logo{
+          position:absolute;
+          top:24px;
+          right:24px;
+          font-size:32px;
+          opacity:.9;
+        }
+        .card-type{
+          position:absolute;
+          top:24px;
+          left:24px;
+          background:rgba(255,255,255,.2);
+          padding:4px 12px;
+          border-radius:12px;
+          font-size:11px;
+          font-weight:600;
+          color:#fff;
+        }
+        .add-icon{
+          font-size:48px;
+          margin-bottom:12px;
+          color:#888;
+        }
+        .add-text{
+          font-weight:600;
+          font-size:14px;
+          color:#888;
+        }
+
+        .section-header{
+          padding:20px 16px 12px;
+          font-size:16px;
+          font-weight:700;
+          color:var(--text);
+        }
+
+        /* QUICK ACTIONS */
+        .actions-grid{
+          padding:0 16px 16px;
+          display:grid;
+          grid-template-columns:repeat(4,1fr);
+          gap:12px;
+        }
+        .action-card{
+          background:var(--card);
+          border-radius:12px;
+          padding:16px 8px;
+          text-align:center;
+          cursor:pointer;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          transition:all .2s;
+        }
+        .action-card:hover{
+          transform:translateY(-2px);
+          box-shadow:0 4px 12px rgba(0,0,0,.1);
+        }
+        .action-icon{
+          font-size:28px;
+          margin-bottom:8px;
+        }
+        .action-name{
+          font-size:12px;
+          font-weight:600;
+        }
+
+        /* TRANSACTIONS */
+        .transactions-list{
+          padding:0 16px 16px;
+        }
+        .transaction-item{
+          background:var(--card);
+          border-radius:12px;
+          padding:16px;
+          margin-bottom:10px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          display:flex;
+          align-items:center;
+          gap:12px;
+        }
+        .trans-icon{
+          width:44px;
+          height:44px;
+          border-radius:50%;
+          background:rgba(0,128,55,.1);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:20px;
+          flex-shrink:0;
+        }
+        .trans-details{
+          flex:1;
+        }
+        .trans-title{
+          font-weight:600;
+          font-size:14px;
+          margin-bottom:4px;
+        }
+        .trans-date{
+          font-size:12px;
+          color:#888;
+        }
+        .trans-amount{
+          font-weight:700;
+          font-size:15px;
+          color:#ff6b6b;
+        }
+
+        /* STATS */
+        .stats-grid{
+          padding:0 16px 16px;
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:12px;
+        }
+        .stat-card{
+          background:var(--card);
+          border-radius:12px;
+          padding:16px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+        }
+        .stat-label{
+          font-size:12px;
+          color:#888;
+          margin-bottom:6px;
+        }
+        .stat-value{
+          font-size:24px;
+          font-weight:700;
+          color:var(--green);
+        }
+
+        .bottom-nav{
+          position:fixed;
+          bottom:0;
+          left:0;
+          right:0;
+          height:60px;
+          background:var(--card);
+          display:flex;
+          border-top:1px solid rgba(0,0,0,.08);
+          box-shadow:0 -2px 10px rgba(0,0,0,.05);
+          z-index:100;
+        }
+        .bn{
+          flex:1;
+          text-decoration:none;
+          color:#666;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          font-size:11px;
+          font-weight:500;
+          position:relative;
+        }
+        .bn.active{color:var(--green)}
+        .bn-icon{
+          font-size:20px;
+          margin-bottom:2px;
+        }
+
+        /* MODAL */
+        .modal{
+          position:fixed;
+          inset:0;
+          background:rgba(0,0,0,.6);
+          display:none;
+          align-items:center;
+          justify-content:center;
+          z-index:1000;
+          backdrop-filter:blur(4px);
+          padding:20px;
+        }
+        .modal.show{display:flex}
+        .modal-content{
+          background:var(--card);
+          border-radius:16px;
+          width:100%;
+          max-width:400px;
+          max-height:90vh;
+          overflow-y:auto;
+          box-shadow:0 8px 32px rgba(0,0,0,.2);
+        }
+        .modal-header{
+          padding:20px;
+          border-bottom:1px solid rgba(0,0,0,.05);
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+        }
+        .modal-title{
+          font-weight:700;
+          font-size:18px;
+        }
+        .close-btn{
+          background:none;
+          border:none;
+          font-size:28px;
+          cursor:pointer;
+          color:var(--text);
+        }
+        .modal-body{
+          padding:20px;
+        }
+        .card-preview{
+          width:100%;
+          height:180px;
+          border-radius:16px;
+          background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          padding:20px;
+          margin-bottom:20px;
+          position:relative;
+          color:#fff;
+        }
+        .form-group{
+          margin-bottom:16px;
+        }
+        .form-label{
+          display:block;
+          font-size:13px;
+          font-weight:600;
+          margin-bottom:8px;
+        }
+        .form-input{
+          width:100%;
+          padding:12px;
+          border:2px solid #e0e0e0;
+          border-radius:10px;
+          font-size:14px;
+          background:var(--card);
+          color:var(--text);
+        }
+        .form-input:focus{
+          outline:none;
+          border-color:var(--green);
+        }
+        .modal-actions{
+          padding:20px;
+          display:flex;
+          gap:10px;
+        }
+        .modal-btn{
+          flex:1;
+          padding:14px;
+          border-radius:10px;
+          border:none;
+          font-weight:600;
+          cursor:pointer;
+        }
+        .modal-btn.primary{
+          background:var(--green);
+          color:#fff;
+        }
+        .modal-btn.secondary{
+          background:rgba(0,0,0,.05);
+          color:var(--text);
+        }
+
+        .info-box{
+          background:rgba(0,128,55,.05);
+          padding:12px;
+          border-radius:10px;
+          font-size:13px;
+          margin-top:16px;
+        }
+
+        .toast{
+          position:fixed;
+          bottom:80px;
+          left:50%;
+          transform:translateX(-50%) translateY(100px);
+          background:var(--card);
+          color:var(--text);
+          padding:14px 20px;
+          border-radius:12px;
+          box-shadow:0 4px 16px rgba(0,0,0,.15);
+          z-index:1001;
+          opacity:0;
+          transition:all .3s;
+          border-left:4px solid var(--green);
+        }
+        .toast.show{
+          transform:translateX(-50%) translateY(0);
+          opacity:1;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <h2>Cards</h2>
+        <button class="icon-btn" onclick="showInfo()">ℹ️</button>
+    </header>
+
+    <!-- CARD CAROUSEL -->
+    <div class="card-carousel">
+        <div class="cards-container">
+            <!-- VIRTUAL CARD -->
+            <div class="bank-card virtual" onclick="viewCard('virtual')">
+                <div class="card-type">VIRTUAL</div>
+                <div class="card-logo">💳</div>
+                <div class="card-chip"></div>
+                <div class="card-number">**** **** **** 4892</div>
+                <div class="card-footer">
+                    <div>
+                        <div class="card-holder">Card Holder</div>
+                        <div class="card-name">HAQ ABDULGANIY</div>
+                    </div>
+                    <div class="card-expiry">12/27</div>
+                </div>
+            </div>
+
+            <!-- PHYSICAL CARD -->
+            <div class="bank-card physical" onclick="viewCard('physical')">
+                <div class="card-type">PHYSICAL</div>
+                <div class="card-logo">🎴</div>
+                <div class="card-chip"></div>
+                <div class="card-number">**** **** **** 7234</div>
+                <div class="card-footer">
+                    <div>
+                        <div class="card-holder">Card Holder</div>
+                        <div class="card-name">HAQ ABDULGANIY</div>
+                    </div>
+                    <div class="card-expiry">08/28</div>
+                </div>
+            </div>
+
+            <!-- ADD NEW CARD -->
+            <div class="bank-card add-new" onclick="requestCard()">
+                <div class="add-icon">➕</div>
+                <div class="add-text">Request New Card</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">This Month</div>
+            <div class="stat-value">₦45,200</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Transactions</div>
+            <div class="stat-value">24</div>
+        </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="section-header">Quick Actions</div>
+    <div class="actions-grid">
+        <div class="action-card" onclick="fundCard()">
+            <div class="action-icon">💰</div>
+            <div class="action-name">Fund Card</div>
+        </div>
+        <div class="action-card" onclick="freezeCard()">
+            <div class="action-icon">❄️</div>
+            <div class="action-name">Freeze</div>
+        </div>
+        <div class="action-card" onclick="viewDetails()">
+            <div class="action-icon">👁️</div>
+            <div class="action-name">View PIN</div>
+        </div>
+        <div class="action-card" onclick="cardSettings()">
+            <div class="action-icon">⚙️</div>
+            <div class="action-name">Settings</div>
+        </div>
+    </div>
+
+    <!-- RECENT TRANSACTIONS -->
+    <div class="section-header">Recent Transactions</div>
+    <div class="transactions-list">
+        <div class="transaction-item">
+            <div class="trans-icon">🛒</div>
+            <div class="trans-details">
+                <div class="trans-title">Shoprite Purchase</div>
+                <div class="trans-date">Today, 2:30 PM</div>
+            </div>
+            <div class="trans-amount">-₦8,500</div>
+        </div>
+        <div class="transaction-item">
+            <div class="trans-icon">🍔</div>
+            <div class="trans-details">
+                <div class="trans-title">KFC Restaurant</div>
+                <div class="trans-date">Today, 11:15 AM</div>
+            </div>
+            <div class="trans-amount">-₦3,200</div>
+        </div>
+        <div class="transaction-item">
+            <div class="trans-icon">⛽</div>
+            <div class="trans-details">
+                <div class="trans-title">Fuel Station</div>
+                <div class="trans-date">Yesterday, 6:45 PM</div>
+            </div>
+            <div class="trans-amount">-₦15,000</div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bn">
+            <span class="bn-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="finance.html" class="bn active">
+            <span class="bn-icon">💼</span>
+            <span>Finance</span>
+        </a>
+        <a href="reward.html" class="bn">
+            <span class="bn-icon">🎁</span>
+            <span>Rewards</span>
+        </a>
+        <a href="me.html" class="bn">
+            <span class="bn-icon">👤</span>
+            <span>Me</span>
+        </a>
+    </nav>
+
+    <!-- CARD DETAILS MODAL -->
+    <div class="modal" id="cardModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Card Details</div>
+                <button class="close-btn" onclick="closeCardModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="card-preview">
+                    <div class="card-type" id="modalCardType">VIRTUAL</div>
+                    <div class="card-chip"></div>
+                    <div class="card-number" id="modalCardNumber">**** **** **** 4892</div>
+                    <div class="card-footer">
+                        <div>
+                            <div class="card-holder">Card Holder</div>
+                            <div class="card-name">HAQ ABDULGANIY</div>
+                        </div>
+                        <div class="card-expiry" id="modalCardExpiry">12/27</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">Card Number</div>
+                    <div style="font-size:18px;font-weight:700" id="fullCardNumber">**** **** **** 4892</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">CVV</div>
+                    <div style="font-size:18px;font-weight:700">***</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">Status</div>
+                    <div style="font-size:14px;font-weight:600;color:var(--green)">✓ Active</div>
+                </div>
+                <div class="info-box">
+                    ℹ️ Use this card for online and POS transactions worldwide
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="copyCardNumber()">📋 Copy</button>
+                <button class="modal-btn primary" onclick="closeCardModal()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REQUEST CARD MODAL -->
+    <div class="modal" id="requestModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Request New Card</div>
+                <button class="close-btn" onclick="closeRequestModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-label">Card Type</div>
+                    <select class="form-input" id="cardType">
+                        <option value="virtual">Virtual Card (Free, Instant)</option>
+                        <option value="physical">Physical Card (₦2,500, 5-7 days)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">Card Name</div>
+                    <input type="text" class="form-input" placeholder="Card nickname (optional)" id="cardName">
+                </div>
+                <div class="form-group" id="deliveryGroup" style="display:none">
+                    <div class="form-label">Delivery Address</div>
+                    <input type="text" class="form-input" placeholder="Enter delivery address" id="address">
+                </div>
+                <div class="info-box">
+                    <b>Virtual Card:</b> Instant issuance, free, perfect for online shopping<br>
+                    <b>Physical Card:</b> ₦2,500 fee, 5-7 days delivery, use anywhere
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeRequestModal()">Cancel</button>
+                <button class="modal-btn primary" onclick="submitRequest()">Request Card</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+    <script>
+        function viewCard(type) {
+            if (type === 'virtual') {
+                document.getElementById('modalCardType').textContent = 'VIRTUAL';
+                document.getElementById('modalCardNumber').textContent = '**** **** **** 4892';
+                document.getElementById('fullCardNumber').textContent = '5060 8810 2345 4892';
+                document.getElementById('modalCardExpiry').textContent = '12/27';
+            } else {
+                document.getElementById('modalCardType').textContent = 'PHYSICAL';
+                document.getElementById('modalCardNumber').textContent = '**** **** **** 7234';
+                document.getElementById('fullCardNumber').textContent = '5399 1205 6789 7234';
+                document.getElementById('modalCardExpiry').textContent = '08/28';
+            }
+            document.getElementById('cardModal').classList.add('show');
+        }
+
+        function closeCardModal() {
+            document.getElementById('cardModal').classList.remove('show');
+        }
+
+        function copyCardNumber() {
+            const cardNumber = document.getElementById('fullCardNumber').textContent;
+            navigator.clipboard.writeText(cardNumber.replace(/\s/g, '')).then(() => {
+                showToast('✅ Card number copied!');
+            });
+        }
+
+        function requestCard() {
+            document.getElementById('requestModal').classList.add('show');
+        }
+
+        function closeRequestModal() {
+            document.getElementById('requestModal').classList.remove('show');
+        }
+
+        document.getElementById('cardType').addEventListener('change', (e) => {
+            const deliveryGroup = document.getElementById('deliveryGroup');
+            deliveryGroup.style.display = e.target.value === 'physical' ? 'block' : 'none';
+        });
+
+        function submitRequest() {
+            const type = document.getElementById('cardType').value;
+            const name = document.getElementById('cardName').value || 'My Card';
+            
+            if (type === 'physical') {
+                const address = document.getElementById('address').value;
+                if (!address) {
+                    showToast('❌ Please enter delivery address');
+                    return;
+                }
+            }
+            
+            closeRequestModal();
+            showToast('⏳ Processing request...');
+            
+            setTimeout(() => {
+                if (type === 'virtual') {
+                    showToast('✅ Virtual card created instantly!');
+                } else {
+                    showToast('✅ Physical card requested. Delivery in 5-7 days');
+                }
+            }, 2000);
+        }
+
+        function fundCard() {
+            showToast('💰 Opening funding options...');
+        }
+
+        function freezeCard() {
+            showToast('❄️ Card frozen successfully');
+        }
+
+        function viewDetails() {
+            showToast('👁️ PIN: 1234 (Demo)');
+        }
+
+        function cardSettings() {
+            showToast('⚙️ Opening card settings...');
+        }
+
+        function goBack() {
+            window.location.href = 'finance.html';
+        }
+
+        function showInfo() {
+            showToast('ℹ️ Virtual: Free, instant. Physical: ₦2,500, 5-7 days');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        document.querySelectorAll('.modal').forEach(m => {
+            m.addEventListener('click', e => {
+                if (e.target === m) m.classList.remove('show');
+            });
+        });
+
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+        if(darkMode) document.body.classList.add('dark');
+    </script>
+</body>
+</html>

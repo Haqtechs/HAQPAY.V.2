@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Airtime - HaqPay</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HaqPay">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+    <style>
+        :root{
+          --green:#008037;
+          --green-strong:#00a84e;
+          --bg:#f3f8f5;
+          --card:#fff;
+          --text:#111;
+        }
+
+        body.dark{
+          --bg:#0f1a14;
+          --card:#15261d;
+          --text:#f2f2f2;
+        }
+
+        *{box-sizing:border-box}
+        body{
+          margin:0;
+          font-family:Inter,Arial,sans-serif;
+          background:var(--bg);
+          color:var(--text);
+          padding-bottom:70px;
+        }
+
+        /* HEADER */
+        .header{
+          background:var(--green);
+          color:#fff;
+          padding:16px;
+          display:flex;
+          align-items:center;
+          gap:12px;
+          position:sticky;
+          top:0;
+          z-index:100;
+          box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+        .back-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+          transition:all .2s;
+        }
+        .back-btn:hover{background:rgba(255,255,255,.25)}
+        .header h2{
+          margin:0;
+          font-size:18px;
+          font-weight:700;
+          flex:1;
+        }
+        .icon-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+        }
+
+        /* CASHBACK BANNER */
+        .cashback-banner{
+          margin:16px;
+          background:linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+          color:#000;
+          padding:16px;
+          border-radius:12px;
+          text-align:center;
+          box-shadow:0 4px 12px rgba(255,165,0,.3);
+        }
+        .cashback-text{
+          font-size:14px;
+          font-weight:700;
+          margin-bottom:4px;
+        }
+        .cashback-desc{
+          font-size:12px;
+          opacity:.9;
+        }
+
+        /* SECTION HEADER */
+        .section-header{
+          padding:20px 16px 12px;
+          font-size:16px;
+          font-weight:700;
+          color:var(--text);
+        }
+
+        /* OPERATOR SELECTION */
+        .operator-grid{
+          padding:0 16px 16px;
+          display:grid;
+          grid-template-columns:repeat(4,1fr);
+          gap:12px;
+        }
+        .operator-card{
+          background:var(--card);
+          border:2px solid #e0e0e0;
+          border-radius:12px;
+          padding:16px 8px;
+          text-align:center;
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .operator-card:hover{
+          transform:translateY(-2px);
+          box-shadow:0 4px 12px rgba(0,0,0,.1);
+        }
+        .operator-card.active{
+          border-color:var(--green);
+          background:rgba(0,128,55,.05);
+        }
+        .operator-logo{
+          font-size:32px;
+          margin-bottom:8px;
+        }
+        .operator-name{
+          font-size:12px;
+          font-weight:600;
+        }
+
+        /* BENEFICIARIES */
+        .beneficiaries{
+          display:flex;
+          gap:12px;
+          overflow-x:auto;
+          padding:0 16px 16px;
+          -webkit-overflow-scrolling:touch;
+        }
+        .beneficiaries::-webkit-scrollbar{display:none}
+        .beneficiary{
+          text-align:center;
+          min-width:70px;
+          cursor:pointer;
+        }
+        .beneficiary-avatar{
+          width:56px;
+          height:56px;
+          border-radius:50%;
+          background:var(--green);
+          color:#fff;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:24px;
+          margin:0 auto 8px;
+          box-shadow:0 2px 8px rgba(0,128,55,.15);
+        }
+        .beneficiary-name{
+          font-size:12px;
+          font-weight:600;
+        }
+
+        /* FORM CARD */
+        .form-card{
+          margin:0 16px 16px;
+          background:var(--card);
+          border-radius:12px;
+          padding:20px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+        }
+        .form-group{
+          margin-bottom:20px;
+        }
+        .form-label{
+          display:block;
+          font-size:13px;
+          font-weight:600;
+          margin-bottom:8px;
+          color:var(--text);
+        }
+        .input-wrapper{
+          position:relative;
+        }
+        .form-input{
+          width:100%;
+          padding:14px;
+          padding-right:40px;
+          border:2px solid #e0e0e0;
+          border-radius:10px;
+          font-size:14px;
+          background:var(--card);
+          color:var(--text);
+        }
+        .form-input:focus{
+          outline:none;
+          border-color:var(--green);
+        }
+        .input-icon{
+          position:absolute;
+          right:14px;
+          top:50%;
+          transform:translateY(-50%);
+          color:#888;
+          cursor:pointer;
+        }
+        .helper-text{
+          font-size:12px;
+          color:#888;
+          margin-top:6px;
+        }
+        .amount-input{
+          font-size:20px;
+          font-weight:700;
+        }
+
+        /* QUICK AMOUNTS */
+        .quick-amounts{
+          display:grid;
+          grid-template-columns:repeat(4,1fr);
+          gap:10px;
+          margin-top:12px;
+        }
+        .quick-amount{
+          background:rgba(0,128,55,.1);
+          border:2px solid transparent;
+          color:var(--green);
+          padding:12px 8px;
+          border-radius:10px;
+          font-weight:700;
+          font-size:14px;
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .quick-amount:hover{
+          background:rgba(0,128,55,.15);
+          transform:scale(1.05);
+        }
+        .quick-amount.active{
+          background:var(--green);
+          color:#fff;
+          border-color:var(--green);
+        }
+
+        /* INFO BOX */
+        .info-box{
+          background:#e6f4ec;
+          padding:12px;
+          border-radius:10px;
+          font-size:12px;
+          display:flex;
+          align-items:center;
+          gap:10px;
+          margin-top:16px;
+        }
+        .info-icon{
+          font-size:20px;
+        }
+
+        /* BUY BUTTON */
+        .buy-btn{
+          position:fixed;
+          bottom:70px;
+          left:16px;
+          right:16px;
+          background:var(--green);
+          color:#fff;
+          border:none;
+          padding:16px;
+          border-radius:12px;
+          font-weight:600;
+          font-size:16px;
+          cursor:pointer;
+          box-shadow:0 4px 12px rgba(0,128,55,.3);
+          transition:all .2s;
+          z-index:50;
+        }
+        .buy-btn:hover{background:var(--green-strong)}
+        .buy-btn:active{transform:scale(.98)}
+        .buy-btn:disabled{
+          background:#ccc;
+          cursor:not-allowed;
+        }
+
+        /* BOTTOM NAV */
+        .bottom-nav{
+          position:fixed;
+          bottom:0;
+          left:0;
+          right:0;
+          height:60px;
+          background:var(--card);
+          display:flex;
+          border-top:1px solid rgba(0,0,0,.08);
+          box-shadow:0 -2px 10px rgba(0,0,0,.05);
+          z-index:100;
+        }
+        .bn{
+          flex:1;
+          text-decoration:none;
+          color:#666;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          font-size:11px;
+          font-weight:500;
+          transition:all .2s;
+          position:relative;
+        }
+        .bn::before{
+          content:"";
+          position:absolute;
+          top:0;
+          width:0;
+          height:3px;
+          background:var(--green);
+          transition:width .3s;
+        }
+        .bn.active{color:var(--green)}
+        .bn.active::before{width:60%}
+        .bn-icon{
+          font-size:20px;
+          margin-bottom:2px;
+        }
+
+        /* MODAL */
+        .modal{
+          position:fixed;
+          inset:0;
+          background:rgba(0,0,0,.6);
+          display:none;
+          align-items:center;
+          justify-content:center;
+          z-index:1000;
+          backdrop-filter:blur(4px);
+          padding:20px;
+        }
+        .modal.show{display:flex}
+        .modal-content{
+          background:var(--card);
+          border-radius:16px;
+          width:100%;
+          max-width:400px;
+          text-align:center;
+          box-shadow:0 8px 32px rgba(0,0,0,.2);
+          padding:24px;
+        }
+        .modal-icon{
+          font-size:64px;
+          margin-bottom:16px;
+        }
+        .modal-title{
+          font-weight:700;
+          font-size:20px;
+          margin-bottom:12px;
+        }
+        .modal-text{
+          font-size:14px;
+          color:#888;
+          margin-bottom:8px;
+        }
+        .modal-detail{
+          background:rgba(0,128,55,.05);
+          padding:12px;
+          border-radius:10px;
+          margin:12px 0;
+        }
+        .detail-row{
+          display:flex;
+          justify-content:space-between;
+          padding:8px 0;
+          font-size:14px;
+        }
+        .detail-label{
+          color:#888;
+        }
+        .detail-value{
+          font-weight:600;
+        }
+        .cashback-highlight{
+          background:#ffd700;
+          color:#000;
+          padding:8px;
+          border-radius:8px;
+          font-size:13px;
+          font-weight:700;
+          margin:12px 0;
+        }
+        .modal-actions{
+          display:flex;
+          gap:10px;
+          margin-top:20px;
+        }
+        .modal-btn{
+          flex:1;
+          padding:14px;
+          border-radius:10px;
+          border:none;
+          font-weight:600;
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .modal-btn.primary{
+          background:var(--green);
+          color:#fff;
+        }
+        .modal-btn.secondary{
+          background:rgba(0,0,0,.05);
+          color:var(--text);
+        }
+
+        /* SUCCESS MODAL */
+        .success-icon{
+          width:80px;
+          height:80px;
+          border-radius:50%;
+          background:#e6f4ec;
+          color:var(--green);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:48px;
+          margin:0 auto 20px;
+          animation:successPop .5s;
+        }
+        @keyframes successPop{
+          0%{transform:scale(0)}
+          50%{transform:scale(1.1)}
+          100%{transform:scale(1)}
+        }
+
+        /* TOAST */
+        .toast{
+          position:fixed;
+          bottom:80px;
+          left:50%;
+          transform:translateX(-50%) translateY(100px);
+          background:var(--card);
+          color:var(--text);
+          padding:14px 20px;
+          border-radius:12px;
+          box-shadow:0 4px 16px rgba(0,0,0,.15);
+          display:flex;
+          align-items:center;
+          gap:10px;
+          z-index:1001;
+          opacity:0;
+          transition:all .3s;
+          max-width:90%;
+          border-left:4px solid var(--green);
+        }
+        .toast.show{
+          transform:translateX(-50%) translateY(0);
+          opacity:1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <button class="back-btn" id="backBtn">←</button>
+        <h2>Buy Airtime</h2>
+        <button class="icon-btn" id="balanceBtn">💰</button>
+    </header>
+
+    <!-- CASHBACK BANNER -->
+    <div class="cashback-banner">
+        <div class="cashback-text">🎉 Get 2% Cashback on All Recharges!</div>
+        <div class="cashback-desc">Instant cashback on every purchase</div>
+    </div>
+
+    <!-- SELECT OPERATOR -->
+    <div class="section-header">Select Network</div>
+    <div class="operator-grid">
+        <div class="operator-card" onclick="selectOperator('MTN')">
+            <div class="operator-logo">📱</div>
+            <div class="operator-name">MTN</div>
+        </div>
+        <div class="operator-card" onclick="selectOperator('Glo')">
+            <div class="operator-logo">🟢</div>
+            <div class="operator-name">Glo</div>
+        </div>
+        <div class="operator-card" onclick="selectOperator('Airtel')">
+            <div class="operator-logo">🔴</div>
+            <div class="operator-name">Airtel</div>
+        </div>
+        <div class="operator-card" onclick="selectOperator('9mobile')">
+            <div class="operator-logo">🟡</div>
+            <div class="operator-name">9mobile</div>
+        </div>
+    </div>
+
+    <!-- RECENT BENEFICIARIES -->
+    <div class="section-header">Recent</div>
+    <div class="beneficiaries">
+        <div class="beneficiary" onclick="selectBeneficiary('09137109134', 'MTN')">
+            <div class="beneficiary-avatar">👤</div>
+            <div class="beneficiary-name">Self</div>
+        </div>
+        <div class="beneficiary" onclick="selectBeneficiary('0812345678', 'Glo')">
+            <div class="beneficiary-avatar">👨</div>
+            <div class="beneficiary-name">Bro yusuf</div>
+        </div>
+        <div class="beneficiary" onclick="selectBeneficiary('07084160928', 'Airtel')">
+            <div class="beneficiary-avatar">👩</div>
+            <div class="beneficiary-name">Opeyemi</div>
+        </div>
+        <div class="beneficiary" onclick="selectBeneficiary('07032607533', 'MTN')">
+            <div class="beneficiary-avatar">❤️‍🩹</div>
+            <div class="beneficiary-name">Mum</div>
+        </div>
+    </div>
+
+    <!-- FORM -->
+    <div class="form-card">
+        <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <div class="input-wrapper">
+                <input type="tel" class="form-input" id="phoneInput" placeholder="0803 456 7890" maxlength="11">
+                <span class="input-icon" onclick="openContacts()">📞</span>
+            </div>
+            <div class="helper-text" id="operatorDetect"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Amount (₦50 - ₦50,000)</label>
+            <input type="number" class="form-input amount-input" id="amountInput" placeholder="0" min="50" max="50000">
+            
+            <div class="quick-amounts">
+                <button class="quick-amount" onclick="selectAmount(100)">₦100</button>
+                <button class="quick-amount" onclick="selectAmount(200)">₦200</button>
+                <button class="quick-amount" onclick="selectAmount(500)">₦500</button>
+                <button class="quick-amount" onclick="selectAmount(1000)">₦1,000</button>
+                <button class="quick-amount" onclick="selectAmount(1500)">₦1,500</button>
+                <button class="quick-amount" onclick="selectAmount(2000)">₦2,000</button>
+                <button class="quick-amount" onclick="selectAmount(5000)">₦5,000</button>
+                <button class="quick-amount" onclick="selectAmount(10000)">₦10,000</button>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-icon">ℹ️</div>
+            <div>Airtime is delivered instantly. You'll earn <b>2% cashback</b> on every purchase.</div>
+        </div>
+    </div>
+
+    <!-- BUY BUTTON -->
+    <button class="buy-btn" id="buyBtn" disabled onclick="confirmPurchase()">
+        Select network and enter amount
+    </button>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bn">
+            <span class="bn-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="finance.html" class="bn active">
+            <span class="bn-icon">💼</span>
+            <span>Finance</span>
+        </a>
+        <a href="reward.html" class="bn">
+            <span class="bn-icon">🎁</span>
+            <span>Rewards</span>
+        </a>
+        <a href="me.html" class="bn">
+            <span class="bn-icon">👤</span>
+            <span>Me</span>
+        </a>
+    </nav>
+
+    <!-- CONFIRMATION MODAL -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-icon">📱</div>
+            <div class="modal-title">Confirm Purchase</div>
+            <div class="modal-text">Please verify your airtime purchase</div>
+            <div class="modal-detail">
+                <div class="detail-row">
+                    <span class="detail-label">Network</span>
+                    <span class="detail-value" id="confirmNetwork"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Phone</span>
+                    <span class="detail-value" id="confirmPhone"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Amount</span>
+                    <span class="detail-value" style="color:var(--green)" id="confirmAmount"></span>
+                </div>
+            </div>
+            <div class="cashback-highlight">
+                🎉 You'll earn <span id="cashbackAmount"></span> cashback!
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeConfirm()">Cancel</button>
+                <button class="modal-btn primary" onclick="processPurchase()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUCCESS MODAL -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-icon">✓</div>
+            <div class="modal-title">Purchase Successful!</div>
+            <div class="modal-text" id="successMessage"></div>
+            <div class="cashback-highlight" id="earnedCashback"></div>
+            <div class="modal-actions" style="margin-top:24px">
+                <button class="modal-btn secondary" onclick="viewReceipt()">View Receipt</button>
+                <button class="modal-btn primary" onclick="closeSuccess()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <span id="toastMsg"></span>
+    </div>
+
+    <script>
+        let selectedOperator = null;
+        let phoneNumber = '';
+        let amount = 0;
+
+        // Select operator
+        function selectOperator(operator) {
+            selectedOperator = operator;
+            
+            document.querySelectorAll('.operator-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            updateBuyButton();
+            showToast(`📱 ${operator} selected`);
+        }
+
+        // Select beneficiary
+        function selectBeneficiary(phone, operator) {
+            document.getElementById('phoneInput').value = phone;
+            phoneNumber = phone;
+            selectOperator(operator);
+        }
+
+        // Phone input
+        document.getElementById('phoneInput').addEventListener('input', (e) => {
+            phoneNumber = e.target.value;
+              // Auto-detect operator
+            if (phoneNumber.length >= 4) {
+                const prefix = phoneNumber.substring(0, 4);
+                let detected = null;
+                
+                if (['0803', '0806', '0810', '0813', '0814', '0816', '0903', '0906'].includes(prefix)) {
+                    detected = 'MTN';
+                } else if (['0805', '0807', '0811', '0815', '0905'].includes(prefix)) {
+                    detected = 'Glo';
+                } else if (['0802', '0808', '0812', '0901', '0902', '0904', '0907'].includes(prefix)) {
+                    detected = 'Airtel';
+                } else if (['0809', '0817', '0818', '0908', '0909'].includes(prefix)) {
+                    detected = '9mobile';
+                }
+                
+                if (detected) {
+                    document.getElementById('operatorDetect').textContent = `✓ ${detected} detected`;
+                    document.getElementById('operatorDetect').style.color = 'var(--green)';
+                    if (!selectedOperator) {
+                        selectOperator(detected);
+                    }
+                }
+            }
+            
+            updateBuyButton();
+        });
+
+        // Amount input
+        document.getElementById('amountInput').addEventListener('input', (e) => {
+            amount = parseInt(e.target.value) || 0;
+            
+            // Remove active class from quick amounts
+            document.querySelectorAll('.quick-amount').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            updateBuyButton();
+        });
+
+        // Select amount
+        function selectAmount(value) {
+            amount = value;
+            document.getElementById('amountInput').value = value;
+            
+            document.querySelectorAll('.quick-amount').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            updateBuyButton();
+        }
+
+        // Update buy button
+        function updateBuyButton() {
+            const btn = document.getElementById('buyBtn');
+            
+            if (selectedOperator && phoneNumber.length === 11 && amount >= 50 && amount <= 50000) {
+                btn.disabled = false;
+                btn.textContent = `Buy ₦${amount.toLocaleString()} Airtime`;
+            } else if (amount > 50000) {
+                btn.disabled = true;
+                btn.textContent = 'Maximum amount is ₦50,000';
+            } else if (amount > 0 && amount < 50) {
+                btn.disabled = true;
+                btn.textContent = 'Minimum amount is ₦50';
+            } else {
+                btn.disabled = true;
+                btn.textContent = 'Select network and enter amount';
+            }
+        }
+
+        // Confirm purchase
+        function confirmPurchase() {
+            if (!selectedOperator || !phoneNumber || !amount) return;
+            
+            const cashback = Math.round(amount * 0.02);
+            
+            document.getElementById('confirmNetwork').textContent = selectedOperator;
+            document.getElementById('confirmPhone').textContent = phoneNumber;
+            document.getElementById('confirmAmount').textContent = `₦${amount.toLocaleString()}`;
+            document.getElementById('cashbackAmount').textContent = `₦${cashback}`;
+            
+            document.getElementById('confirmModal').classList.add('show');
+        }
+
+        // Close confirm
+        function closeConfirm() {
+            document.getElementById('confirmModal').classList.remove('show');
+        }
+
+        // Process purchase
+        function processPurchase() {
+            closeConfirm();
+            
+            // Simulate processing
+            showToast('⏳ Processing purchase...');
+            
+            setTimeout(() => {
+                const cashback = Math.round(amount * 0.02);
+                document.getElementById('successMessage').textContent = 
+                    `₦${amount.toLocaleString()} airtime sent to ${phoneNumber}`;
+                document.getElementById('earnedCashback').textContent = 
+                    `💰 You earned ₦${cashback} cashback!`;
+                document.getElementById('successModal').classList.add('show');
+            }, 2000);
+        }
+
+        // Close success
+        function closeSuccess() {
+            document.getElementById('successModal').classList.remove('show');
+            window.location.href = 'index.html';
+        }
+
+        // View receipt
+        function viewReceipt() {
+            showToast('📄 Receipt downloaded');
+        }
+
+        // Open contacts
+        function openContacts() {
+            showToast('📞 Opening contacts...');
+        }
+
+        // Check balance
+        document.getElementById('balanceBtn').addEventListener('click', () => {
+            showToast('💰 Balance: ₦50,000.00');
+        });
+
+        // Back button
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modals on backdrop
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        });
+
+        // Dark mode
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+        if(darkMode) document.body.classList.add('dark');
+    </script>
+
+</body>
+</html>

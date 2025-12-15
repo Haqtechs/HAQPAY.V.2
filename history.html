@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History - HaqPay</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HaqPay">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+    <style>
+        :root{
+          --green:#008037;
+          --green-strong:#00a84e;
+          --bg:#f3f8f5;
+          --card:#fff;
+          --text:#111;
+          --red:#ff6b6b;
+          --orange:#ff9f1a;
+        }
+
+        body.dark{
+          --bg:#0f1a14;
+          --card:#15261d;
+          --text:#f2f2f2;
+        }
+
+        *{box-sizing:border-box}
+        body{
+          margin:0;
+          font-family:Inter,Arial,sans-serif;
+          background:var(--bg);
+          color:var(--text);
+          padding-bottom:70px;
+        }
+
+        /* HEADER */
+        .header{
+          background:var(--green);
+          color:#fff;
+          padding:16px;
+          display:flex;
+          align-items:center;
+          gap:12px;
+          position:sticky;
+          top:0;
+          z-index:100;
+          box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+        .back-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+          transition:all .2s;
+        }
+        .back-btn:hover{background:rgba(255,255,255,.25)}
+        .header h2{
+          margin:0;
+          font-size:18px;
+          font-weight:700;
+          flex:1;
+        }
+        .header-actions{
+          display:flex;
+          gap:8px;
+        }
+        .icon-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+          transition:all .2s;
+        }
+        .icon-btn:hover{background:rgba(255,255,255,.25)}
+
+        /* SUMMARY CARD */
+        .summary-card{
+          margin:16px;
+          background:linear-gradient(135deg, var(--green-strong) 0%, var(--green) 100%);
+          color:#fff;
+          padding:20px;
+          border-radius:16px;
+          box-shadow:0 4px 12px rgba(0,128,55,.2);
+        }
+        .summary-title{
+          font-size:13px;
+          opacity:.9;
+          margin-bottom:12px;
+        }
+        .summary-stats{
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:16px;
+        }
+        .stat-box{
+          background:rgba(255,255,255,.15);
+          padding:12px;
+          border-radius:10px;
+        }
+        .stat-label{
+          font-size:12px;
+          opacity:.9;
+          margin-bottom:4px;
+        }
+        .stat-value{
+          font-size:20px;
+          font-weight:700;
+        }
+
+        /* SEARCH & FILTER */
+        .search-filter{
+          padding:0 16px 16px;
+        }
+        .search-box{
+          position:relative;
+          margin-bottom:12px;
+        }
+        .search-box::before{
+          content:"🔍";
+          position:absolute;
+          left:12px;
+          top:12px;
+          font-size:16px;
+        }
+        .search-box input{
+          width:100%;
+          padding:12px 12px 12px 40px;
+          border-radius:12px;
+          border:1px solid #d9e9dc;
+          background:var(--card);
+          color:var(--text);
+          font-size:14px;
+        }
+        .search-box input:focus{
+          outline:none;
+          border-color:var(--green);
+          box-shadow:0 0 0 3px rgba(0,128,55,.1);
+        }
+        .filter-row{
+          display:flex;
+          gap:8px;
+          overflow-x:auto;
+          -webkit-overflow-scrolling:touch;
+        }
+        .filter-row::-webkit-scrollbar{display:none}
+        .filter-chip{
+          padding:8px 16px;
+          border-radius:20px;
+          border:1px solid #d9e9dc;
+          background:var(--card);
+          color:var(--text);
+          font-size:13px;
+          font-weight:600;
+          white-space:nowrap;
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .filter-chip.active{
+          background:var(--green);
+          color:#fff;
+          border-color:var(--green);
+        }
+        .filter-chip:hover{
+          border-color:var(--green);
+        }
+
+        /* TRANSACTION LIST */
+        .transaction-list{
+          padding:0 16px 16px;
+        }
+        .date-group{
+          margin-bottom:24px;
+        }
+        .date-header{
+          font-size:14px;
+          font-weight:700;
+          color:var(--text);
+          margin-bottom:12px;
+          padding-left:4px;
+        }
+        .transaction-card{
+          background:var(--card);
+          border-radius:12px;
+          padding:14px;
+          margin-bottom:10px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          cursor:pointer;
+          transition:all .2s;
+          display:flex;
+          align-items:center;
+          gap:12px;
+        }
+        .transaction-card:hover{
+          transform:translateY(-2px);
+          box-shadow:0 4px 12px rgba(0,0,0,.1);
+        }
+        .transaction-icon{
+          width:44px;
+          height:44px;
+          border-radius:50%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:20px;
+          flex-shrink:0;
+        }
+        .transaction-icon.credit{background:#e6f4ec;color:var(--green)}
+        .transaction-icon.debit{background:#fff0f0;color:var(--red)}
+        .transaction-details{
+          flex:1;
+          min-width:0;
+        }
+        .transaction-title{
+          font-weight:600;
+          font-size:14px;
+          margin-bottom:4px;
+          white-space:nowrap;
+          overflow:hidden;
+          text-overflow:ellipsis;
+        }
+        .transaction-meta{
+          font-size:12px;
+          color:#888;
+          display:flex;
+          align-items:center;
+          gap:8px;
+        }
+        .transaction-status{
+          padding:2px 8px;
+          border-radius:10px;
+          font-size:10px;
+          font-weight:600;
+        }
+        .status-success{background:#e6f4ec;color:var(--green)}
+        .status-pending{background:#fff4e6;color:var(--orange)}
+        .status-failed{background:#fff0f0;color:var(--red)}
+        .transaction-amount{
+          font-weight:700;
+          font-size:15px;
+          flex-shrink:0;
+        }
+        .transaction-amount.credit{color:var(--green)}
+        .transaction-amount.debit{color:var(--red)}
+
+        /* EMPTY STATE */
+        .empty-state{
+          text-align:center;
+          padding:60px 20px;
+          color:#888;
+        }
+        .empty-icon{
+          font-size:64px;
+          margin-bottom:16px;
+          opacity:.5;
+        }
+        .empty-title{
+          font-size:18px;
+          font-weight:700;
+          margin-bottom:8px;
+          color:var(--text);
+        }
+        .empty-text{
+          font-size:14px;
+        }
+
+        /* MODAL */
+        .modal{
+          position:fixed;
+          inset:0;
+          background:rgba(0,0,0,.6);
+          display:none;
+          align-items:center;
+          justify-content:center;
+          z-index:1000;
+          backdrop-filter:blur(4px);
+          padding:20px;
+        }
+        .modal.show{display:flex}
+        .modal-content{
+          background:var(--card);
+          border-radius:16px;
+          width:100%;
+          max-width:400px;
+          max-height:90vh;
+          overflow-y:auto;
+          box-shadow:0 8px 32px rgba(0,0,0,.2);
+        }
+        .modal-header{
+          padding:20px;
+          border-bottom:1px solid rgba(0,0,0,.05);
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+        }
+        .modal-title{
+          font-weight:700;
+          font-size:18px;
+        }
+        .close-btn{
+          background:none;
+          border:none;
+          font-size:24px;
+          cursor:pointer;
+          color:var(--text);
+          width:32px;
+          height:32px;
+          border-radius:50%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+        }
+        .close-btn:hover{background:rgba(0,0,0,.05)}
+        .modal-body{
+          padding:20px;
+        }
+        .detail-row{
+          display:flex;
+          justify-content:space-between;
+          padding:12px 0;
+          border-bottom:1px solid rgba(0,0,0,.05);
+        }
+        .detail-row:last-child{border:none}
+        .detail-label{
+          color:#888;
+          font-size:13px;
+        }
+        .detail-value{
+          font-weight:600;
+          font-size:14px;
+          text-align:right;
+        }
+        .modal-actions{
+          padding:20px;
+          display:flex;
+          gap:10px;
+        }
+        .btn{
+          flex:1;
+          padding:12px;
+          border-radius:10px;
+          border:none;
+          font-weight:600;
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .btn-primary{
+          background:var(--green);
+          color:#fff;
+        }
+        .btn-primary:hover{background:var(--green-strong)}
+        .btn-secondary{
+          background:rgba(0,0,0,.05);
+          color:var(--text);
+        }
+        .btn-secondary:hover{background:rgba(0,0,0,.1)}
+
+        /* BOTTOM NAV */
+        .bottom-nav{
+          position:fixed;
+          bottom:0;
+          left:0;
+          right:0;
+          height:60px;
+          background:var(--card);
+          display:flex;
+          border-top:1px solid rgba(0,0,0,.08);
+          box-shadow:0 -2px 10px rgba(0,0,0,.05);
+          z-index:100;
+        }
+        .bn{
+          flex:1;
+          text-decoration:none;
+          color:#666;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          font-size:11px;
+          font-weight:500;
+          transition:all .2s;
+          position:relative;
+        }
+        .bn::before{
+          content:"";
+          position:absolute;
+          top:0;
+          width:0;
+          height:3px;
+          background:var(--green);
+          transition:width .3s;
+        }
+        .bn.active{color:var(--green)}
+        .bn.active::before{width:60%}
+        .bn-icon{
+          font-size:20px;
+          margin-bottom:2px;
+        }
+
+        /* TOAST */
+        .toast{
+          position:fixed;
+          bottom:80px;
+          left:50%;
+          transform:translateX(-50%) translateY(100px);
+          background:var(--card);
+          color:var(--text);
+          padding:14px 20px;
+          border-radius:12px;
+          box-shadow:0 4px 16px rgba(0,0,0,.15);
+          display:flex;
+          align-items:center;
+          gap:10px;
+          z-index:1001;
+          opacity:0;
+          transition:all .3s;
+          max-width:90%;
+          border-left:4px solid var(--green);
+        }
+        .toast.show{
+          transform:translateX(-50%) translateY(0);
+          opacity:1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <button class="back-btn" id="backBtn">←</button>
+        <h2>Transaction History</h2>
+        <div class="header-actions">
+            <button class="icon-btn" id="exportBtn" title="Export">📥</button>
+            <button class="icon-btn" id="themeBtn" title="Toggle theme">🌙</button>
+        </div>
+    </header>
+
+    <!-- SUMMARY CARD -->
+    <section class="summary-card">
+        <div class="summary-title">December 2025</div>
+        <div class="summary-stats">
+            <div class="stat-box">
+                <div class="stat-label">Money In</div>
+                <div class="stat-value" id="totalCredit">₦0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Money Out</div>
+                <div class="stat-value" id="totalDebit">₦0</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEARCH & FILTER -->
+    <section class="search-filter">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search transactions...">
+        </div>
+        <div class="filter-row">
+            <button class="filter-chip active" data-filter="all">All</button>
+            <button class="filter-chip" data-filter="credit">Money In</button>
+            <button class="filter-chip" data-filter="debit">Money Out</button>
+            <button class="filter-chip" data-filter="transfer">Transfers</button>
+            <button class="filter-chip" data-filter="bills">Bills</button>
+            <button class="filter-chip" data-filter="airtime">Airtime</button>
+        </div>
+    </section>
+
+    <!-- TRANSACTION LIST -->
+    <section class="transaction-list" id="transactionList">
+        <!-- Transactions will be loaded here -->
+    </section>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bn">
+            <span class="bn-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="finance.html" class="bn">
+            <span class="bn-icon">💼</span>
+            <span>Finance</span>
+        </a>
+        <a href="reward.html" class="bn">
+            <span class="bn-icon">🎁</span>
+            <span>Rewards</span>
+        </a>
+        <a href="me.html" class="bn">
+            <span class="bn-icon">👤</span>
+            <span>Me</span>
+        </a>
+    </nav>
+
+    <!-- TRANSACTION DETAIL MODAL -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Transaction Details</div>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Details will be loaded here -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="downloadReceipt">📥 Receipt</button>
+                <button class="btn btn-primary" id="reuseTransaction">🔁 Repeat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <span id="toastMsg"></span>
+    </div>
+
+    <script>
+        // Mock transaction data
+        const allTransactions = [
+            {
+                id: 'TXN001',
+                type: 'credit',
+                category: 'salary',
+                icon: '💰',
+                title: 'Salary Payment',
+                description: 'Monthly salary credit',
+                date: '2025-12-14',
+                time: '09:30 AM',
+                amount: 150000,
+                status: 'success',
+                reference: 'SAL-DEC-2025',
+                from: 'Employer Ltd'
+            },
+            {
+                id: 'TXN002',
+                type: 'debit',
+                category: 'transfer',
+                icon: '🔁',
+                title: 'Transfer to fadipe preciou Oyindamola',
+                description: 'Money transfer',
+                date: '2025-12-14',
+                time: '11:45 AM',
+                amount: 8500,
+                status: 'success',
+                reference: 'TRF-456789',
+                to: '0123456789 - GTBank'
+            },
+            {
+                id: 'TXN003',
+                type: 'debit',
+                category: 'bills',
+                icon: '💡',
+                title: 'EKEDC Bill Payment',
+                description: 'Electricity bill',
+                date: '2025-12-13',
+                time: '03:20 PM',
+                amount: 4200,
+                status: 'success',
+                reference: 'BILL-789456',
+                to: 'Meter: 04567891234'
+            },
+            {
+                id: 'TXN004',
+                type: 'credit',
+                category: 'cashback',
+                icon: '🎁',
+                title: 'Cashback Reward',
+                description: 'Bill payment cashback',
+                date: '2025-12-13',
+                time: '05:15 PM',
+                amount: 250,
+                status: 'success',
+                reference: 'CBK-987654'
+            },
+            {
+                id: 'TXN005',
+                type: 'debit',
+                category: 'airtime',
+                icon: '📱',
+                title: 'MTN Airtime',
+                description: 'Airtime purchase',
+                date: '2025-12-12',
+                time: '08:30 AM',
+                amount: 1000,
+                status: 'success',
+                reference: 'AIR-123456',
+                to: '0801234567'
+            },
+            {
+                id: 'TXN006',
+                type: 'debit',
+                category: 'transfer',
+                icon: '🔁',
+                title: 'Transfer to fashina Khalid',
+                description: 'Money transfer',
+                date: '2025-12-11',
+                time: '02:15 PM',
+                amount: 15000,
+                status: 'pending',
+                reference: 'TRF-789123',
+                to: '9876543210 - Access Bank'
+            },
+            
+            {
+                id: 'TXN007',
+                type: 'debit',
+                category: 'bills',
+                icon: '📺',
+                title: 'DStv Subscription',
+                description: 'Cable TV subscription',
+                date: '2025-12-10',
+                time: '10:00 AM',
+                amount: 9500,
+                status: 'success',
+                reference: 'BILL-456123',
+                to: 'Smartcard: 7012345678'
+            },
+            {
+                id: 'TXN008',
+                type: 'debit',
+                category: 'airtime',
+                icon: '📱',
+                title: 'Airtel Data Bundle',
+                description: 'Data purchase - 5GB',
+                date: '2025-12-09',
+                time: '07:45 PM',
+                amount: 2000,
+                status: 'success',
+                reference: 'DATA-654321',
+                to: '0802345678'
+            },
+            {
+                id: 'TXN009',
+                type: 'credit',
+                category: 'refund',
+                icon: '↩️',
+                title: 'Refund',
+                description: 'Failed transaction refund',
+                date: '2025-12-08',
+                time: '01:30 PM',
+                amount: 3500,
+                status: 'success',
+                reference: 'REF-321654'
+            },
+            {
+                id: 'TXN010',
+                type: 'debit',
+                category: 'transfer',
+                icon: '🔁',
+                title: 'Transfer Failed',
+                description: 'Network error',
+                date: '2025-12-08',
+                time: '12:00 PM',
+                amount: 3500,
+                status: 'failed',
+                reference: 'TRF-654987',
+                to: '5432167890 - Zenith Bank'
+            }
+        ];
+
+        let filteredTransactions = [...allTransactions];
+        let currentTransaction = null;
+
+        // Group transactions by date
+        function groupByDate(transactions) {
+            const groups = {};
+            const today = new Date().toISOString().split('T')[0];
+            const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+
+            transactions.forEach(t => {
+                let dateLabel = t.date;
+                if (t.date === today) dateLabel = 'Today';
+                else if (t.date === yesterday) dateLabel = 'Yesterday';
+                else {
+                    const date = new Date(t.date);
+                    dateLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                }
+
+                if (!groups[dateLabel]) groups[dateLabel] = [];
+                groups[dateLabel].push(t);
+            });
+
+            return groups;
+        }
+
+        // Render transactions
+        function renderTransactions() {
+            const list = document.getElementById('transactionList');
+            
+            if (filteredTransactions.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <div class="empty-title">No transactions found</div>
+                        <div class="empty-text">Try adjusting your filters</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const grouped = groupByDate(filteredTransactions);
+            list.innerHTML = '';
+
+            Object.keys(grouped).forEach(dateLabel => {
+                const dateGroup = document.createElement('div');
+                dateGroup.className = 'date-group';
+                
+                const header = document.createElement('div');
+                header.className = 'date-header';
+                header.textContent = dateLabel;
+                dateGroup.appendChild(header);
+
+                grouped[dateLabel].forEach(t => {
+                    const card = document.createElement('div');
+                    card.className = 'transaction-card';
+                    card.onclick = () => showDetails(t);
+                    
+                    card.innerHTML = `
+                        <div class="transaction-icon ${t.type}">
+                            ${t.icon}
+                        </div>
+                        <div class="transaction-details">
+                            <div class="transaction-title">${t.title}</div>
+                            <div class="transaction-meta">
+                                <span class="transaction-status status-${t.status}">
+                                    ${t.status.toUpperCase()}
+                                </span>
+                                <span>${t.time}</span>
+                            </div>
+                        </div>
+                        <div class="transaction-amount ${t.type}">
+                            ${t.type === 'credit' ? '+' : '-'}₦${t.amount.toLocaleString()}
+                        </div>
+                    `;
+                    
+                    dateGroup.appendChild(card);
+                });
+
+                list.appendChild(dateGroup);
+            });
+
+            updateSummary();
+        }
+
+        // Update summary
+        function updateSummary() {
+            const credit = filteredTransactions
+                .filter(t => t.type === 'credit')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const debit = filteredTransactions
+                .filter(t => t.type === 'debit')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            document.getElementById('totalCredit').textContent = `₦${credit.toLocaleString()}`;
+            document.getElementById('totalDebit').textContent = `₦${debit.toLocaleString()}`;
+        }
+
+        // Filter transactions
+        function filterTransactions(filterType) {
+            if (filterType === 'all') {
+                filteredTransactions = [...allTransactions];
+            } else if (filterType === 'credit' || filterType === 'debit') {
+                filteredTransactions = allTransactions.filter(t => t.type === filterType);
+            } else {
+                filteredTransactions = allTransactions.filter(t => t.category === filterType);
+            }
+            renderTransactions();
+        }
+
+        // Search transactions
+        function searchTransactions(query) {
+            const lowerQuery = query.toLowerCase();
+            filteredTransactions = allTransactions.filter(t => 
+                t.title.toLowerCase().includes(lowerQuery) ||
+                t.description.toLowerCase().includes(lowerQuery) ||
+                t.reference.toLowerCase().includes(lowerQuery)
+            );
+            renderTransactions();
+        }
+
+        // Show transaction details
+        function showDetails(transaction) {
+            currentTransaction = transaction;
+            const modal = document.getElementById('detailModal');
+            const body = document.getElementById('modalBody');
+            
+            body.innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">Transaction ID</span>
+                    <span class="detail-value">${transaction.reference}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Type</span>
+                    <span class="detail-value">${transaction.description}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Amount</span>
+                    <span class="detail-value" style="color:${transaction.type === 'credit' ? 'var(--green)' : 'var(--red)'}">
+                        ${transaction.type === 'credit' ? '+' : '-'}₦${transaction.amount.toLocaleString()}
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status</span>
+                    <span class="detail-value">
+                        <span class="transaction-status status-${transaction.status}">${transaction.status.toUpperCase()}</span>
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date & Time</span>
+                    <span class="detail-value">${transaction.date} ${transaction.time}</span>
+                </div>
+                ${transaction.from ? `
+                    <div class="detail-row">
+                        <span class="detail-label">From</span>
+                        <span class="detail-value">${transaction.from}</span>
+                    </div>
+                ` : ''}
+                ${transaction.to ? `
+                    <div class="detail-row">
+                        <span class="detail-label">To</span>
+                        <span class="detail-value">${transaction.to}</span>
+                    </div>
+                ` : ''}
+            `;
+            
+            modal.classList.add('show');
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Dark mode
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+        if(darkMode) document.body.classList.add('dark');
+
+        function toggleDark() {
+            document.body.classList.toggle('dark');
+            darkMode = !darkMode;
+            localStorage.setItem('darkMode', darkMode);
+            showToast(darkMode ? '🌙 Dark mode on' : '☀️ Light mode on');
+        }
+
+        // Event listeners
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = 'finance.html';
+        });
+
+        document.getElementById('themeBtn').addEventListener('click', toggleDark);
+
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            showToast('📥 Exporting transactions...');
+        });
+
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('detailModal').classList.remove('show');
+        });
+
+        document.getElementById('downloadReceipt').addEventListener('click', () => {
+            showToast('📄 Receipt downloaded');
+        });
+
+        document.getElementById('reuseTransaction').addEventListener('click', () => {
+            if (currentTransaction) {
+                showToast(`🔁 Repeating ${currentTransaction.title}...`);
+                setTimeout(() => {
+                    document.getElementById('detailModal').classList.remove('show');
+                }, 1000);
+            }
+        });
+
+        // Filter chips
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                filterTransactions(chip.dataset.filter);
+            });
+        });
+
+        // Search input
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchTransactions(e.target.value);
+        });
+
+        // Close modal on backdrop click
+        document.getElementById('detailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'detailModal') {
+                e.target.classList.remove('show');
+            }
+        });
+
+        // Initialize
+        renderTransactions();
+    </script>
+
+</body>
+</html>

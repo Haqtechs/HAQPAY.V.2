@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HaqPay – Sign Up</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#008037">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+<style>
+:root{
+  --green:#008037;
+  --green-strong:#00a84e;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:linear-gradient(135deg, var(--green-strong) 0%, var(--green) 100%);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.container{
+  background:#fff;
+  border-radius:20px;
+  padding:32px 24px;
+  max-width:420px;
+  width:100%;
+  box-shadow:0 10px 40px rgba(0,0,0,.2);
+}
+
+.logo{
+  text-align:center;
+  margin-bottom:24px;
+}
+
+.logo h1{
+  color:var(--green);
+  font-size:32px;
+  margin:0 0 8px;
+}
+
+.logo p{
+  color:#666;
+  font-size:14px;
+  margin:0;
+}
+
+.form-group{
+  margin-bottom:16px;
+}
+
+.form-group label{
+  display:block;
+  font-size:13px;
+  font-weight:600;
+  margin-bottom:6px;
+  color:#333;
+}
+
+.form-group input{
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:2px solid #e0e0e0;
+  font-size:15px;
+  transition:all .3s;
+}
+
+.form-group input:focus{
+  outline:none;
+  border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(0,128,55,.1);
+}
+
+.form-group input.error{
+  border-color:#ff4757;
+}
+
+.error-msg{
+  color:#ff4757;
+  font-size:12px;
+  margin-top:4px;
+  display:none;
+}
+
+.password-wrapper{
+  position:relative;
+}
+
+.toggle-password{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-size:18px;
+  padding:4px;
+}
+
+.captcha-box{
+  background:#f8f9fa;
+  border-radius:10px;
+  padding:16px;
+  margin-bottom:16px;
+  text-align:center;
+}
+
+.captcha-display{
+  background:var(--green);
+  color:#fff;
+  padding:12px;
+  border-radius:8px;
+  font-size:24px;
+  letter-spacing:8px;
+  font-weight:bold;
+  user-select:none;
+  margin-bottom:12px;
+  font-family:'Courier New', monospace;
+  text-decoration:line-through;
+}
+
+.refresh-captcha{
+  background:#fff;
+  border:2px solid var(--green);
+  color:var(--green);
+  padding:6px 16px;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:600;
+  transition:all .2s;
+}
+
+.refresh-captcha:hover{
+  background:var(--green);
+  color:#fff;
+}
+
+.btn{
+  width:100%;
+  padding:14px;
+  border-radius:10px;
+  border:none;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .3s;
+  margin-top:8px;
+}
+
+.btn-primary{
+  background:var(--green);
+  color:#fff;
+}
+
+.btn-primary:hover{
+  background:var(--green-strong);
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(0,128,55,.3);
+}
+
+.btn-primary:active{
+  transform:translateY(0);
+}
+
+.link-text{
+  text-align:center;
+  margin-top:20px;
+  font-size:14px;
+  color:#666;
+}
+
+.link-text a{
+  color:var(--green);
+  text-decoration:none;
+  font-weight:600;
+}
+
+.toast{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%) translateY(100px);
+  background:#fff;
+  color:#333;
+  padding:14px 20px;
+  border-radius:12px;
+  box-shadow:0 4px 16px rgba(0,0,0,.2);
+  z-index:1001;
+  opacity:0;
+  transition:all .3s;
+  border-left:4px solid var(--green);
+}
+
+.toast.show{
+  transform:translateX(-50%) translateY(0);
+  opacity:1;
+}
+
+.toast.error{
+  border-left-color:#ff4757;
+}
+
+.requirements{
+  background:#f8f9fa;
+  border-radius:8px;
+  padding:12px;
+  margin-top:8px;
+  font-size:12px;
+}
+
+.requirements div{
+  margin:4px 0;
+  color:#666;
+}
+
+.requirements div.valid{
+  color:var(--green);
+}
+
+.requirements div::before{
+  content:"○ ";
+}
+
+.requirements div.valid::before{
+  content:"✓ ";
+  font-weight:bold;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo">
+    <h1>💚 HaqPay</h1>
+    <p>Create your secure account</p>
+  </div>
+
+  <form id="signupForm">
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="fullName" placeholder="Enter your full name" required>
+      <div class="error-msg" id="nameError">Please enter your full name</div>
+    </div>
+
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="email" placeholder="your@email.com" required>
+      <div class="error-msg" id="emailError">Please enter a valid email</div>
+    </div>
+
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="tel" id="phone" placeholder="08012345678" required>
+      <div class="error-msg" id="phoneError">Please enter a valid phone number</div>
+    </div>
+
+    <div class="form-group">
+      <label>Login Password</label>
+      <div class="password-wrapper">
+        <input type="password" id="password" placeholder="Create a strong password" required>
+        <button type="button" class="toggle-password" onclick="togglePassword('password')">👁️</button>
+      </div>
+      <div class="requirements" id="passwordReqs">
+        <div id="req1">At least 8 characters</div>
+        <div id="req2">Contains uppercase letter</div>
+        <div id="req3">Contains lowercase letter</div>
+        <div id="req4">Contains number</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Confirm Password</label>
+      <div class="password-wrapper">
+        <input type="password" id="confirmPassword" placeholder="Re-enter password" required>
+        <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">👁️</button>
+      </div>
+      <div class="error-msg" id="confirmError">Passwords do not match</div>
+    </div>
+
+    <div class="form-group">
+      <label>Transaction PIN (4 digits)</label>
+      <input type="password" id="pin" placeholder="••••" maxlength="4" pattern="[0-9]{4}" required>
+      <div class="error-msg" id="pinError">PIN must be 4 digits</div>
+    </div>
+
+    <div class="captcha-box">
+      <div class="captcha-display" id="captchaDisplay"></div>
+      <button type="button" class="refresh-captcha" onclick="generateCaptcha()">🔄 Refresh</button>
+    </div>
+
+    <div class="form-group">
+      <label>Enter Captcha</label>
+      <input type="text" id="captchaInput" placeholder="Enter the code above" required>
+      <div class="error-msg" id="captchaError">Captcha does not match</div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Account</button>
+  </form>
+
+  <div class="link-text">
+    Already have an account? <a href="login.html">Log In</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let captchaCode = '';
+
+function generateCaptcha(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  captchaCode = '';
+  for(let i=0; i<6; i++){
+    captchaCode += chars[Math.floor(Math.random() * chars.length)];
+  }
+  document.getElementById('captchaDisplay').textContent = captchaCode;
+}
+
+function togglePassword(id){
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function showToast(message, isError = false){
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function validatePassword(){
+  const pwd = document.getElementById('password').value;
+  const req1 = document.getElementById('req1');
+  const req2 = document.getElementById('req2');
+  const req3 = document.getElementById('req3');
+  const req4 = document.getElementById('req4');
+
+  req1.className = pwd.length >= 8 ? 'valid' : '';
+  req2.className = /[A-Z]/.test(pwd) ? 'valid' : '';
+  req3.className = /[a-z]/.test(pwd) ? 'valid' : '';
+  req4.className = /[0-9]/.test(pwd) ? 'valid' : '';
+
+  return pwd.length >= 8 && /[A-Z]/.test(pwd) && /[a-z]/.test(pwd) && /[0-9]/.test(pwd);
+}
+
+document.getElementById('password').addEventListener('input', validatePassword);
+
+document.getElementById('signupForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  const fullName = document.getElementById('fullName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  const pin = document.getElementById('pin').value;
+  const captchaInput = document.getElementById('captchaInput').value.trim();
+
+  let isValid = true;
+
+  if(!fullName){
+    document.getElementById('fullName').classList.add('error');
+    document.getElementById('nameError').style.display = 'block';
+    isValid = false;
+  } else {
+    document.getElementById('fullName').classList.remove('error');
+    document.getElementById('nameError').style.display = 'none';
+  }
+
+  if(!email || !email.includes('@')){
+    document.getElementById('email').classList.add('error');
+    document.getElementById('emailError').style.display = 'block';
+    isValid = false;
+  } else {
+    document.getElementById('email').classList.remove('error');
+    document.getElementById('emailError').style.display = 'none';
+  }
+
+  if(!phone || phone.length < 10){
+    document.getElementById('phone').classList.add('error');
+    document.getElementById('phoneError').style.display = 'block';
+    isValid = false;
+  } else {
+    document.getElementById('phone').classList.remove('error');
+    document.getElementById('phoneError').style.display = 'none';
+  }
+
+  if(!validatePassword()){
+    document.getElementById('password').classList.add('error');
+    isValid = false;
+  } else {
+    document.getElementById('password').classList.remove('error');
+  }
+
+  if(password !== confirmPassword){
+    document.getElementById('confirmPassword').classList.add('error');
+    document.getElementById('confirmError').style.display = 'block';
+    isValid = false;
+  } else {
+    document.getElementById('confirmPassword').classList.remove('error');
+    document.getElementById('confirmError').style.display = 'none';
+  }
+
+  if(pin.length !== 4 || !/^\d{4}$/.test(pin)){
+    document.getElementById('pin').classList.add('error');
+    document.getElementById('pinError').style.display = 'block';
+    isValid = false;
+  } else {
+    document.getElementById('pin').classList.remove('error');
+    document.getElementById('pinError').style.display = 'none';
+  }
+
+  if(captchaInput.toUpperCase() !== captchaCode){
+    document.getElementById('captchaInput').classList.add('error');
+    document.getElementById('captchaError').style.display = 'block';
+    isValid = false;
+  } else {
+    document.getElementById('captchaInput').classList.remove('error');
+    document.getElementById('captchaError').style.display = 'none';
+  }
+
+  if(!isValid){
+    showToast('❌ Please fix the errors above', true);
+    return;
+  }
+
+  const userData = {
+    fullName,
+    email,
+    phone,
+    password,
+    pin,
+    balance: 50000.00,
+    createdAt: new Date().toISOString(),
+    biometricsEnabled: false
+  };
+
+  try {
+    const users = JSON.parse(localStorage.getItem('haqpay_users') || '[]');
+    
+    if(users.find(u => u.email === email)){
+      showToast('❌ Email already registered', true);
+      return;
+    }
+
+    users.push(userData);
+    localStorage.setItem('haqpay_users', JSON.stringify(users));
+    localStorage.setItem('haqpay_current_user', email);
+    localStorage.setItem('haqpay_logged_in', 'true');
+
+    showToast('✅ Account created successfully!');
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 1500);
+  } catch(err){
+    showToast('❌ Error creating account. Please try again.', true);
+  }
+});
+
+generateCaptcha();
+</script>
+
+</body>
+</html>

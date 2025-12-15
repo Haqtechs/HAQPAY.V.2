@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HaqPay – More</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#008037">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+<style>
+:root{
+  --green:#008037;
+  --green-strong:#00a84e;
+  --bg:#f3f8f5;
+  --card:#fff;
+  --text:#111;
+}
+
+body.dark{
+  --bg:#0f1a14;
+  --card:#15261d;
+  --text:#f2f2f2;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:70px;
+}
+
+.topbar{
+  background:var(--green);
+  color:#fff;
+  padding:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:100;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+
+.back-btn{
+  background:rgba(255,255,255,.15);
+  border:none;
+  color:#fff;
+  font-size:20px;
+  cursor:pointer;
+  width:36px;
+  height:36px;
+  border-radius:8px;
+  transition:all .2s;
+}
+
+.back-btn:hover{
+  background:rgba(255,255,255,.25);
+}
+
+.section{
+  margin:16px;
+  background:var(--card);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.section-title{
+  padding:12px 16px;
+  font-weight:600;
+  font-size:13px;
+  color:#999;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+
+.menu-item{
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid rgba(0,0,0,.05);
+  cursor:pointer;
+  transition:all .2s;
+}
+
+.menu-item:last-child{
+  border-bottom:none;
+}
+
+.menu-item:hover{
+  background:rgba(0,128,55,.05);
+}
+
+.menu-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex:1;
+}
+
+.menu-icon{
+  width:40px;
+  height:40px;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  font-size:20px;
+  background:rgba(0,128,55,.1);
+}
+
+.menu-text h4{
+  margin:0 0 2px;
+  font-size:15px;
+  font-weight:600;
+}
+
+.menu-text p{
+  margin:0;
+  font-size:12px;
+  color:#999;
+}
+
+.menu-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.toggle{
+  position:relative;
+  width:48px;
+  height:28px;
+  background:#ddd;
+  border-radius:14px;
+  cursor:pointer;
+  transition:all .3s;
+}
+
+.toggle.active{
+  background:var(--green);
+}
+
+.toggle::before{
+  content:'';
+  position:absolute;
+  width:22px;
+  height:22px;
+  background:#fff;
+  border-radius:50%;
+  top:3px;
+  left:3px;
+  transition:all .3s;
+  box-shadow:0 2px 4px rgba(0,0,0,.2);
+}
+
+.toggle.active::before{
+  left:23px;
+}
+
+.arrow{
+  color:#999;
+  font-size:18px;
+}
+
+.logout-btn{
+  margin:16px;
+  padding:14px;
+  background:#ff4757;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+  width:calc(100% - 32px);
+  cursor:pointer;
+  transition:all .2s;
+}
+
+.logout-btn:hover{
+  background:#ff3142;
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(255,71,87,.3);
+}
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:60px;
+  background:var(--card);
+  display:flex;
+  border-top:1px solid rgba(0,0,0,.08);
+  box-shadow:0 -2px 10px rgba(0,0,0,.05);
+  z-index:100;
+}
+
+.bn{
+  flex:1;
+  text-decoration:none;
+  color:#666;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+  font-weight:500;
+  transition:all .2s;
+  position:relative;
+}
+
+.bn.active{
+  color:var(--green);
+}
+
+.bn.active::before{
+  content:"";
+  position:absolute;
+  top:0;
+  width:60%;
+  height:3px;
+  background:var(--green);
+}
+
+.bn-icon{
+  font-size:20px;
+  margin-bottom:2px;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+  backdrop-filter:blur(4px);
+  padding:20px;
+}
+
+.modal-box{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  width:100%;
+  max-width:400px;
+  box-shadow:0 8px 32px rgba(0,0,0,.2);
+}
+
+.modal-box h3{
+  margin-top:0;
+  color:var(--text);
+}
+
+.modal-box p{
+  color:#666;
+  font-size:14px;
+}
+
+.modal-box input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:2px solid #e0e0e0;
+  font-size:16px;
+  margin-bottom:12px;
+  background:var(--card);
+  color:var(--text);
+}
+
+.modal-box input:focus{
+  outline:none;
+  border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(0,128,55,.1);
+}
+
+.modal-box input[type="password"]{
+  text-align:center;
+  letter-spacing:8px;
+}
+
+.modal-buttons{
+  display:flex;
+  gap:8px;
+}
+
+.modal-buttons button{
+  flex:1;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-weight:600;
+  transition:all .2s;
+}
+
+.btn-primary{
+  background:var(--green);
+  color:#fff;
+}
+
+.btn-primary:hover{
+  background:var(--green-strong);
+}
+
+.btn-secondary{
+  background:#e0e0e0;
+  color:#333;
+}
+
+.btn-secondary:hover{
+  background:#d0d0d0;
+}
+
+.toast{
+  position:fixed;
+  bottom:80px;
+  left:50%;
+  transform:translateX(-50%) translateY(100px);
+  background:var(--card);
+  color:var(--text);
+  padding:14px 20px;
+  border-radius:12px;
+  box-shadow:0 4px 16px rgba(0,0,0,.15);
+  z-index:1001;
+  opacity:0;
+  transition:all .3s;
+  border-left:4px solid var(--green);
+}
+
+.toast.show{
+  transform:translateX(-50%) translateY(0);
+  opacity:1;
+}
+
+.toast.error{
+  border-left-color:#ff4757;
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="back-btn" onclick="history.back()">←</button>
+  <h3 style="margin:0">More</h3>
+  <div style="width:36px"></div>
+</header>
+
+<div class="section-title">ACCOUNT</div>
+<div class="section">
+  <div class="menu-item" onclick="showProfile()">
+    <div class="menu-left">
+      <div class="menu-icon">👤</div>
+      <div class="menu-text">
+        <h4>Profile Information</h4>
+        <p>View your account details</p>
+      </div>
+    </div>
+    <div class="menu-right">
+      <span class="arrow">›</span>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">SECURITY</div>
+<div class="section">
+  <div class="menu-item" onclick="changePassword()">
+    <div class="menu-left">
+      <div class="menu-icon">🔑</div>
+      <div class="menu-text">
+        <h4>Change Password</h4>
+        <p>Update your login password</p>
+      </div>
+    </div>
+    <div class="menu-right">
+      <span class="arrow">›</span>
+    </div>
+  </div>
+
+  <div class="menu-item" onclick="changePin()">
+    <div class="menu-left">
+      <div class="menu-icon">🔢</div>
+      <div class="menu-text">
+        <h4>Change Transaction PIN</h4>
+        <p>Update your 4-digit PIN</p>
+      </div>
+    </div>
+    <div class="menu-right">
+      <span class="arrow">›</span>
+    </div>
+  </div>
+
+  <div class="menu-item" onclick="toggleBiometric()">
+    <div class="menu-left">
+      <div class="menu-icon">👆</div>
+      <div class="menu-text">
+        <h4>Biometric Login</h4>
+        <p>Use fingerprint to login</p>
+      </div>
+    </div>
+    <div class="menu-right">
+      <div class="toggle" id="biometricToggle"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">PREFERENCES</div>
+<div class="section">
+  <div class="menu-item" onclick="toggleDark()">
+    <div class="menu-left">
+      <div class="menu-icon">🌙</div>
+      <div class="menu-text">
+        <h4>Dark Mode</h4>
+        <p>Switch to dark theme</p>
+      </div>
+    </div>
+    <div class="menu-right">
+      <div class="toggle" id="darkToggle"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">SUPPORT</div>
+<div class="section">
+  <a href="https://wa.me/2347084160928?text=Hello%20HaqPay%20Support" style="text-decoration:none;color:inherit">
+  <div class="menu-item">
+    <div class="menu-left">
+      <div class="menu-icon">💬</div>
+      <div class="menu-text">
+        <h4>Customer Support</h4>
+        <p>Chat with us on WhatsApp</p>
+      </div>
+    </div>
+    <div class="menu-right">
+      <span class="arrow">›</span>
+    </div>
+  </div>
+  </a>
+
+  <div class="menu-item" onclick="showAbout()">
+    <div class="menu-left">
+      <div class="menu-icon">ℹ️</div>
+      <div class="menu-text">
+        <h4>About HaqPay</h4>
+        <p>Version 1.0.0</p>
+      </div>
+    </div>
+    <div class="menu-right">
+      <span class="arrow">›</span>
+    </div>
+  </div>
+</div>
+
+<button class="logout-btn" onclick="logout()">🚪 Logout</button>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="bn">
+    <span class="bn-icon">🏠</span>
+    <span>Home</span>
+  </a>
+  <a href="finance.html" class="bn">
+    <span class="bn-icon">💼</span>
+    <span>Finance</span>
+  </a>
+  <a href="reward.html" class="bn">
+    <span class="bn-icon">🎁</span>
+    <span>Rewards</span>
+  </a>
+  <a href="more.html" class="bn active">
+    <span class="bn-icon">☰</span>
+    <span>More</span>
+  </a>
+</nav>
+
+<!-- Change Password Modal -->
+<div class="modal" id="passwordModal">
+  <div class="modal-box">
+    <h3>Change Password</h3>
+    <p>Enter your current and new password</p>
+    <input type="password" id="currentPass" placeholder="Current Password">
+    <input type="password" id="newPass" placeholder="New Password">
+    <input type="password" id="confirmPass" placeholder="Confirm New Password">
+    <div class="modal-buttons">
+      <button class="btn-secondary" onclick="closeModal('passwordModal')">Cancel</button>
+      <button class="btn-primary" onclick="savePassword()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Change PIN Modal -->
+<div class="modal" id="pinModal">
+  <div class="modal-box">
+    <h3>Change Transaction PIN</h3>
+    <p>Enter your current and new 4-digit PIN</p>
+    <input type="password" id="currentPin" placeholder="Current PIN" maxlength="4">
+    <input type="password" id="newPin" placeholder="New PIN" maxlength="4">
+    <input type="password" id="confirmPin" placeholder="Confirm New PIN" maxlength="4">
+    <div class="modal-buttons">
+      <button class="btn-secondary" onclick="closeModal('pinModal')">Cancel</button>
+      <button class="btn-primary" onclick="savePin()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let darkMode = localStorage.getItem('darkMode') === 'true';
+if(darkMode) {
+  document.body.classList.add('dark');
+  document.getElementById('darkToggle').classList.add('active');
+}
+
+function loadUserData(){
+  const email = localStorage.getItem('haqpay_current_user');
+  const users = JSON.parse(localStorage.getItem('haqpay_users') || '[]');
+  const user = users.find(u => u.email === email);
+  
+  if(user && user.biometricsEnabled){
+    document.getElementById('biometricToggle').classList.add('active');
+  }
+}
+
+function toggleDark(){
+  document.body.classList.toggle("dark");
+  darkMode = !darkMode;
+  localStorage.setItem('darkMode', darkMode);
+  document.getElementById('darkToggle').classList.toggle('active');
+  showToast(darkMode ? "🌙 Dark mode enabled" : "☀️ Light mode enabled");
+}
+
+function toggleBiometric(){
+  const toggle = document.getElementById('biometricToggle');
+  const isActive = toggle.classList.contains('active');
+  
+  const email = localStorage.getItem('haqpay_current_user');
+  const users = JSON.parse(localStorage.getItem('haqpay_users') || '[]');
+  const userIndex = users.findIndex(u => u.email === email);
+  
+  if(userIndex !== -1){
+    users[userIndex].biometricsEnabled = !isActive;
+    localStorage.setItem('haqpay_users', JSON.stringify(users));
+    if(!isActive){
+      localStorage.setItem('haqpay_last_user', email);
+    }
+    toggle.classList.toggle('active');
+    showToast(isActive ? "🔓 Biometric login disabled" : "👆 Biometric login enabled");
+  }
+}
+
+function changePassword(){
+  document.getElementById('passwordModal').style.display = 'flex';
+}
+
+function changePin(){
+  document.getElementById('pinModal').style.display = 'flex';
+}
+
+function closeModal(id){
+  document.getElementById(id).style.display = 'none';
+  document.querySelectorAll(`#${id} input`).forEach(inp => inp.value = '');
+}
+
+function savePassword(){
+  const currentPass = document.getElementById('currentPass').value;
+  const newPass = document.getElementById('newPass').value;
+  const confirmPass = document.getElementById('confirmPass').value;
+
+  if(!currentPass || !newPass || !confirmPass){
+    showToast('❌ Please fill all fields', true);
+    return;
+  }
+
+  if(newPass !== confirmPass){
+    showToast('❌ Passwords do not match', true);
+    return;
+  }
+
+  if(newPass.length < 8){
+    showToast('❌ Password must be at least 8 characters', true);
+    return;
+  }
+
+  const email = localStorage.getItem('haqpay_current_user');
+  const users = JSON.parse(localStorage.getItem('haqpay_users') || '[]');
+  const userIndex = users.findIndex(u => u.email === email);
+
+  if(userIndex !== -1){
+    if(users[userIndex].password !== currentPass){
+      showToast('❌ Current password is incorrect', true);
+      return;
+    }
+
+    users[userIndex].password = newPass;
+    localStorage.setItem('haqpay_users', JSON.stringify(users));
+    closeModal('passwordModal');
+    showToast('✅ Password changed successfully');
+  }
+}
+
+function savePin(){
+  const currentPin = document.getElementById('currentPin').value;
+  const newPin = document.getElementById('newPin').value;
+  const confirmPin = document.getElementById('confirmPin').value;
+
+  if(!currentPin || !newPin || !confirmPin){
+    showToast('❌ Please fill all fields', true);
+    return;
+  }
+
+  if(newPin !== confirmPin){
+    showToast('❌ PINs do not match', true);
+    return;
+  }
+
+  if(!/^\d{4}$/.test(newPin)){
+    showToast('❌ PIN must be 4 digits', true);
+    return;
+  }
+
+  const email = localStorage.getItem('haqpay_current_user');
+  const users = JSON.parse(localStorage.getItem('haqpay_users') || '[]');
+  const userIndex = users.findIndex(u => u.email === email);
+
+  if(userIndex !== -1){
+    if(users[userIndex].pin !== currentPin){
+      showToast('❌ Current PIN is incorrect', true);
+      return;
+    }
+
+    users[userIndex].pin = newPin;
+    localStorage.setItem('haqpay_users', JSON.stringify(users));
+    closeModal('pinModal');
+    showToast('✅ PIN changed successfully');
+  }
+}
+
+function showProfile(){
+  const email = localStorage.getItem('haqpay_current_user');
+  const users = JSON.parse(localStorage.getItem('haqpay_users') || '[]');
+  const user = users.find(u => u.email === email);
+  
+  if(user){
+    alert(`Name: ${user.fullName}\nEmail: ${user.email}\nPhone: ${user.phone}\nBalance: ₦${user.balance.toLocaleString('en-NG', {minimumFractionDigits: 2})}\nJoined: ${new Date(user.createdAt).toLocaleDateString()}`);
+  }
+}
+
+function showAbout(){
+  alert('HaqPay v1.0.0\n\n© 2024 HaqPay\nSecure & Fast Payments\n\nDeveloped with ❤️');
+}
+
+function logout(){
+  if(confirm('Are you sure you want to logout?')){
+    localStorage.removeItem('haqpay_logged_in');
+    localStorage.removeItem('haqpay_current_user');
+    showToast('👋 Logged out successfully');
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 1000);
+  }
+}
+
+function showToast(message, isError = false){
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+document.querySelectorAll('.modal').forEach(modal => {
+  modal.onclick = (e) => {
+    if(e.target === modal){
+      modal.style.display = 'none';
+    }
+  };
+});
+
+loadUserData();
+</script>
+
+</body>
+</html>

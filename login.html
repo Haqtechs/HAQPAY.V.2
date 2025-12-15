@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HaqPay – Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#008037">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+<style>
+:root{
+  --green:#008037;
+  --green-strong:#00a84e;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:linear-gradient(135deg, var(--green-strong) 0%, var(--green) 100%);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.container{
+  background:#fff;
+  border-radius:20px;
+  padding:32px 24px;
+  max-width:420px;
+  width:100%;
+  box-shadow:0 10px 40px rgba(0,0,0,.2);
+}
+
+.logo{
+  text-align:center;
+  margin-bottom:32px;
+}
+
+.logo h1{
+  color:var(--green);
+  font-size:36px;
+  margin:0 0 8px;
+}
+
+.logo p{
+  color:#666;
+  font-size:14px;
+  margin:0;
+}
+
+.form-group{
+  margin-bottom:16px;
+}
+
+.form-group label{
+  display:block;
+  font-size:13px;
+  font-weight:600;
+  margin-bottom:6px;
+  color:#333;
+}
+
+.form-group input{
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:2px solid #e0e0e0;
+  font-size:15px;
+  transition:all .3s;
+}
+
+.form-group input:focus{
+  outline:none;
+  border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(0,128,55,.1);
+}
+
+.form-group input.error{
+  border-color:#ff4757;
+}
+
+.error-msg{
+  color:#ff4757;
+  font-size:12px;
+  margin-top:4px;
+  display:none;
+}
+
+.password-wrapper{
+  position:relative;
+}
+
+.toggle-password{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-size:18px;
+  padding:4px;
+}
+
+.captcha-box{
+  background:#f8f9fa;
+  border-radius:10px;
+  padding:16px;
+  margin-bottom:16px;
+  text-align:center;
+}
+
+.captcha-display{
+  background:var(--green);
+  color:#fff;
+  padding:12px;
+  border-radius:8px;
+  font-size:24px;
+  letter-spacing:8px;
+  font-weight:bold;
+  user-select:none;
+  margin-bottom:12px;
+  font-family:'Courier New', monospace;
+  text-decoration:line-through;
+}
+
+.refresh-captcha{
+  background:#fff;
+  border:2px solid var(--green);
+  color:var(--green);
+  padding:6px 16px;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:600;
+  transition:all .2s;
+}
+
+.refresh-captcha:hover{
+  background:var(--green);
+  color:#fff;
+}
+
+.remember-forgot{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+  font-size:13px;
+}
+
+.remember-forgot label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  cursor:pointer;
+}
+
+.remember-forgot a{
+  color:var(--green);
+  text-decoration:none;
+  font-weight:600;
+}
+
+.btn{
+  width:100%;
+  padding:14px;
+  border-radius:10px;
+  border:none;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .3s;
+  margin-top:8px;
+}
+
+.btn-primary{
+  background:var(--green);
+  color:#fff;
+}
+
+.btn-primary:hover{
+  background:var(--green-strong);
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(0,128,55,.3);
+}
+
+.btn-primary:active{
+  transform:translateY(0);
+}
+
+.btn-biometric{
+  background:transparent;
+  color:var(--green);
+  border:2px solid var(--green);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.btn-biometric:hover{
+  background:rgba(0,128,55,.05);
+}
+
+.divider{
+  text-align:center;
+  margin:20px 0;
+  color:#999;
+  font-size:13px;
+}
+
+.link-text{
+  text-align:center;
+  margin-top:20px;
+  font-size:14px;
+  color:#666;
+}
+
+.link-text a{
+  color:var(--green);
+  text-decoration:none;
+  font-weight:600;
+}
+
+.toast{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%) translateY(100px);
+  background:#fff;
+  color:#333;
+  padding:14px 20px;
+  border-radius:12px;
+  box-shadow:0 4px 16px rgba(0,0,0,.2);
+  z-index:1001;
+  opacity:0;
+  transition:all .3s;
+  border-left:4px solid var(--green);
+}
+
+.toast.show{
+  transform:translateX(-50%) translateY(0);
+  opacity:1;
+}
+
+.toast.error{
+  border-left-color:#ff4757;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo">
+    <h1>💚 HaqPay</h1>
+    <p>Welcome back!</p>
+  </div>
+
+  <form id="loginForm">
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="email" placeholder="your@email.com" required>
+      <div class="error-msg" id="emailError">Please enter your email</div>
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <div class="password-wrapper">
+        <input type="password" id="password" placeholder="Enter your password" required>
+        <button type="button" class="toggle-password" onclick="togglePassword()">👁️</button>
+      </div>
+      <div class="error-msg" id="passwordError">Please enter your password</div>
+    </div>
+
+    <div class="captcha-box">
+      <div class="captcha-display" id="captchaDisplay"></div>
+      <button type="button" class="refresh-captcha" onclick="generateCaptcha()">🔄 Refresh</button>
+    </div>
+
+    <div class="form-group">
+      <label>Enter Captcha</label>
+      <input type="text" id="captchaInput" placeholder="Enter the code above" required>
+      <div class="error-msg" id="captchaError">Captcha does not match</div>
+    </div>
+
+    <div class="remember-forgot">
+      <label>
+        <input type="checkbox" id="rememberMe">
+        Remember me
+      </label>
+      <a href="#" onclick="showToast('🔐 Contact support for password reset'); return false;">Forgot Password?</a>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Log In</button>
+
+    <div class="divider" id="biometricDivider" style="display:none">OR</div>
+
+    <button type="button" class="btn btn-biometric" id="biometricBtn" style="display:none" onclick="loginWithBiometric()">
+      <span>👆</span>
+      <span>Login with Biometrics</span>
+    </button>
+  </form>
+
+  <div class="link-text">
+    Don't have an account? <a href="signup.html">Sign Up</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let captchaCode = '';
+
+function generateCaptcha(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  captchaCode = '';
+  for(let i=0; i<6; i++){
+    captchaCode += chars[Math.floor(Math.random() * chars.length)];
+  }
+  document.getElementById('captchaDisplay').textContent = captchaCode;
+}
+
+function togglePassword(){
+  const input = document.getElementById('password');
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function showToast(message, isError = false){
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function checkBiometricAvailable(){
+  const lastUser = localStorage.getItem('haqpay_last_user');
+  if(lastUser){
+    const users = JSON.parse(localStorage.getItem('haqpay_users') || '[]');
+    const user = users.find(u => u.email === lastUser);
+    if(user && user.biometricsEnabled){
+      document.getElementById('biometricBtn').style.display = 'flex';
+      document.getElementById('biometricDivider').style.display = 'block';
+    }
+  }
+}
+
+function loginWithBiometric(){
+  const lastUser = localStorage.getItem('haqpay_last_user');
+  if(!lastUser){
+    showToast('❌ No biometric login available', true);
+    return;
+  }
+
+  showToast('👆 Authenticating with biometrics...');
+  
+  setTimeout(() => {
+    localStorage.setItem('haqpay_current_user', lastUser);
+    localStorage.setItem('haqpay_logged_in', 'true');
+    showToast('✅ Login successful!');
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 1000);
+  }, 1500);
+}
+
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const captchaInput = document.getElementById('captchaInput').value.trim();
+  const rememberMe = document.getElementById('rememberMe').checked;
+
+  let isValid = true;
+
+  if(!email){
+    document.getElementById('email').classList.add('error');
+    document.getElementById('emailError').style.display = 'block';
+    isValid = false;
+  } else {
+    document.getElementById('email').classList.remove('error');
+    document.getElementById('emailError').style.display = 'none';
+  }
+
+  if(!password){
+    document.getElementById('password').classList.add('error');
+    document.getElementById('passwordError').style.display = 'block';
+    isValid = false;
+  } else {
+    document.getElementById('password').classList.remove('error');
+    document.getElementById('passwordError').style.display = 'none';
+  }
+
+  if(captchaInput.toUpperCase() !== captchaCode){
+    document.getElementById('captchaInput').classList.add('error');
+    document.getElementById('captchaError').style.display = 'block';
+    isValid = false;
+  } else {
+    document.getElementById('captchaInput').classList.remove('error');
+    document.getElementById('captchaError').style.display = 'none';
+  }
+
+  if(!isValid){
+    showToast('❌ Please fix the errors above', true);
+    return;
+  }
+
+  try {
+    const users = JSON.parse(localStorage.getItem('haqpay_users') || '[]');
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if(user){
+      localStorage.setItem('haqpay_current_user', email);
+      localStorage.setItem('haqpay_logged_in', 'true');
+      if(rememberMe){
+        localStorage.setItem('haqpay_last_user', email);
+      }
+      
+      showToast('✅ Login successful!');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1000);
+    } else {
+      showToast('❌ Invalid email or password', true);
+      generateCaptcha();
+      document.getElementById('captchaInput').value = '';
+    }
+  } catch(err){
+    showToast('❌ Login error. Please try again.', true);
+  }
+});
+
+generateCaptcha();
+checkBiometricAvailable();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loans - HaqPay</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HaqPay">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+    <style>
+        :root{
+          --green:#008037;
+          --green-strong:#00a84e;
+          --bg:#f3f8f5;
+          --card:#fff;
+          --text:#111;
+        }
+
+        body.dark{
+          --bg:#0f1a14;
+          --card:#15261d;
+          --text:#f2f2f2;
+        }
+
+        *{box-sizing:border-box}
+        body{
+          margin:0;
+          font-family:Inter,Arial,sans-serif;
+          background:var(--bg);
+          color:var(--text);
+          padding-bottom:70px;
+        }
+
+        /* HEADER */
+        .header{
+          background:var(--green);
+          color:#fff;
+          padding:16px;
+          display:flex;
+          align-items:center;
+          gap:12px;
+          position:sticky;
+          top:0;
+          z-index:100;
+          box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+        .back-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+        }
+        .header h2{
+          margin:0;
+          font-size:18px;
+          font-weight:700;
+          flex:1;
+        }
+        .icon-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+        }
+
+        /* ELIGIBILITY CARD */
+        .eligibility-card{
+          margin:16px;
+          background:linear-gradient(135deg, var(--green-strong) 0%, var(--green) 100%);
+          color:#fff;
+          padding:24px;
+          border-radius:16px;
+          box-shadow:0 4px 12px rgba(0,128,55,.2);
+        }
+        .credit-score{
+          text-align:center;
+          margin-bottom:20px;
+        }
+        .score-circle{
+          width:100px;
+          height:100px;
+          border-radius:50%;
+          background:rgba(255,255,255,.2);
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          margin:0 auto 12px;
+          border:4px solid rgba(255,255,255,.3);
+        }
+        .score-number{
+          font-size:32px;
+          font-weight:800;
+        }
+        .score-label{
+          font-size:11px;
+          opacity:.9;
+        }
+        .score-rating{
+          font-size:14px;
+          font-weight:600;
+        }
+        .loan-limit{
+          text-align:center;
+          margin-bottom:12px;
+        }
+        .limit-label{
+          font-size:13px;
+          opacity:.9;
+          margin-bottom:6px;
+        }
+        .limit-amount{
+          font-size:36px;
+          font-weight:800;
+        }
+        .eligibility-status{
+          background:rgba(255,255,255,.2);
+          padding:12px;
+          border-radius:10px;
+          text-align:center;
+          font-size:14px;
+          font-weight:600;
+        }
+
+        /* SECTION HEADER */
+        .section-header{
+          padding:20px 16px 12px;
+          font-size:16px;
+          font-weight:700;
+          color:var(--text);
+        }
+
+        /* CALCULATOR CARD */
+        .calculator-card{
+          margin:0 16px 16px;
+          background:var(--card);
+          border-radius:12px;
+          padding:20px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+        }
+        .calc-group{
+          margin-bottom:24px;
+        }
+        .calc-label{
+          display:flex;
+          justify-content:space-between;
+          margin-bottom:12px;
+          font-size:14px;
+          font-weight:600;
+        }
+        .calc-value{
+          color:var(--green);
+          font-size:16px;
+        }
+        .slider{
+          width:100%;
+          height:8px;
+          border-radius:4px;
+          background:#e0e0e0;
+          outline:none;
+          -webkit-appearance:none;
+        }
+        .slider::-webkit-slider-thumb{
+          -webkit-appearance:none;
+          width:24px;
+          height:24px;
+          border-radius:50%;
+          background:var(--green);
+          cursor:pointer;
+        }
+        .slider::-moz-range-thumb{
+          width:24px;
+          height:24px;
+          border-radius:50%;
+          background:var(--green);
+          cursor:pointer;
+          border:none;
+        }
+        .period-options{
+          display:grid;
+          grid-template-columns:repeat(4,1fr);
+          gap:8px;
+          margin-top:12px;
+        }
+        .period-btn{
+          background:rgba(0,128,55,.1);
+          border:2px solid transparent;
+          color:var(--green);
+          padding:10px;
+          border-radius:8px;
+          font-weight:600;
+          font-size:13px;
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .period-btn.active{
+          background:var(--green);
+          color:#fff;
+          border-color:var(--green);
+        }
+        .breakdown-box{
+          background:rgba(0,128,55,.05);
+          padding:16px;
+          border-radius:10px;
+          margin-top:16px;
+        }
+        .breakdown-row{
+          display:flex;
+          justify-content:space-between;
+          padding:8px 0;
+          font-size:14px;
+        }
+        .breakdown-row.total{
+          border-top:2px solid rgba(0,128,55,.2);
+          margin-top:8px;
+          padding-top:12px;
+          font-weight:700;
+          font-size:16px;
+        }
+        .apply-btn{
+          width:100%;
+          background:var(--green);
+          color:#fff;
+          border:none;
+          padding:16px;
+          border-radius:12px;
+          font-weight:600;
+          font-size:16px;
+          cursor:pointer;
+          margin-top:16px;
+        }
+
+        /* LOAN PRODUCTS */
+        .products-grid{
+          padding:0 16px 16px;
+          display:grid;
+          gap:12px;
+        }
+        .product-card{
+          background:var(--card);
+          border:2px solid #e0e0e0;
+          border-radius:12px;
+          padding:18px;
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .product-card:hover{
+          border-color:var(--green);
+          transform:translateY(-2px);
+          box-shadow:0 4px 12px rgba(0,0,0,.1);
+        }
+        .product-header{
+          display:flex;
+          justify-content:space-between;
+          align-items:flex-start;
+          margin-bottom:12px;
+        }
+        .product-icon{
+          width:48px;
+          height:48px;
+          border-radius:50%;
+          background:var(--green);
+          color:#fff;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:24px;
+        }
+        .product-badge{
+          background:#ff9f1a;
+          color:#fff;
+          padding:4px 10px;
+          border-radius:12px;
+          font-size:11px;
+          font-weight:600;
+        }
+        .product-title{
+          font-weight:700;
+          font-size:16px;
+          margin-bottom:6px;
+        }
+        .product-desc{
+          font-size:13px;
+          color:#888;
+          margin-bottom:12px;
+        }
+        .product-details{
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:12px;
+        }
+        .detail-item{
+          font-size:12px;
+        }
+        .detail-label{
+          color:#888;
+          margin-bottom:4px;
+        }
+        .detail-value{
+          font-weight:700;
+          color:var(--green);
+        }
+
+        /* ACTIVE LOANS */
+        .active-loan-card{
+          margin:0 16px 12px;
+          background:var(--card);
+          border-radius:12px;
+          padding:18px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+        }
+        .loan-header{
+          display:flex;
+          justify-content:space-between;
+          margin-bottom:16px;
+        }
+        .loan-info h3{
+          font-size:16px;
+          font-weight:700;
+          margin:0 0 6px;
+        }
+        .loan-info p{
+          font-size:13px;
+          color:#888;
+          margin:0;
+        }
+        .loan-amount{
+          text-align:right;
+        }
+        .amount-label{
+          font-size:12px;
+          color:#888;
+          margin-bottom:4px;
+        }
+        .amount-value{
+          font-size:24px;
+          font-weight:700;
+          color:var(--green);
+        }
+        .progress-bar{
+          height:8px;
+          background:#e0e0e0;
+          border-radius:4px;
+          overflow:hidden;
+          margin-bottom:12px;
+        }
+        .progress-fill{
+          height:100%;
+          background:var(--green);
+          border-radius:4px;
+          transition:width .5s;
+        }
+        .progress-text{
+          font-size:12px;
+          color:#888;
+          margin-bottom:16px;
+        }
+        .loan-actions{
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:10px;
+        }
+        .loan-btn{
+          padding:12px;
+          border-radius:10px;
+          font-weight:600;
+          font-size:14px;
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .loan-btn.primary{
+          background:var(--green);
+          color:#fff;
+          border:none;
+        }
+        .loan-btn.secondary{
+          background:rgba(0,0,0,.05);
+          color:var(--text);
+          border:none;
+        }
+
+        /* BOTTOM NAV */
+        .bottom-nav{
+          position:fixed;
+          bottom:0;
+          left:0;
+          right:0;
+          height:60px;
+          background:var(--card);
+          display:flex;
+          border-top:1px solid rgba(0,0,0,.08);
+          box-shadow:0 -2px 10px rgba(0,0,0,.05);
+          z-index:100;
+        }
+        .bn{
+          flex:1;
+          text-decoration:none;
+          color:#666;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          font-size:11px;
+          font-weight:500;
+          position:relative;
+        }
+        .bn.active{color:var(--green)}
+        .bn-icon{
+          font-size:20px;
+          margin-bottom:2px;
+        }
+
+        /* MODAL */
+        .modal{
+          position:fixed;
+          inset:0;
+          background:rgba(0,0,0,.6);
+          display:none;
+          align-items:center;
+          justify-content:center;
+          z-index:1000;
+          backdrop-filter:blur(4px);
+          padding:20px;
+        }
+        .modal.show{display:flex}
+        .modal-content{
+          background:var(--card);
+          border-radius:16px;
+          width:100%;
+          max-width:400px;
+          max-height:90vh;
+          overflow-y:auto;
+          box-shadow:0 8px 32px rgba(0,0,0,.2);
+        }
+        .modal-header{
+          padding:20px;
+          border-bottom:1px solid rgba(0,0,0,.05);
+        }
+        .modal-title{
+          font-weight:700;
+          font-size:18px;
+        }
+        .modal-body{
+          padding:20px;
+        }
+        .form-group{
+          margin-bottom:16px;
+        }
+        .form-label{
+          display:block;
+          font-size:13px;
+          font-weight:600;
+          margin-bottom:8px;
+        }
+        .form-input, .form-select{
+          width:100%;
+          padding:12px;
+          border:2px solid #e0e0e0;
+          border-radius:10px;
+          font-size:14px;
+          background:var(--card);
+          color:var(--text);
+        }
+        .form-input:focus, .form-select:focus{
+          outline:none;
+          border-color:var(--green);
+        }
+        .checkbox-group{
+          display:flex;
+          align-items:center;
+          gap:10px;
+          margin:16px 0;
+        }
+        .modal-actions{
+          padding:20px;
+          display:flex;
+          gap:10px;
+        }
+        .modal-btn{
+          flex:1;
+          padding:14px;
+          border-radius:10px;
+          border:none;
+          font-weight:600;
+          cursor:pointer;
+        }
+        .modal-btn.primary{
+          background:var(--green);
+          color:#fff;
+        }
+        .modal-btn.secondary{
+          background:rgba(0,0,0,.05);
+          color:var(--text);
+        }
+
+        /* SUCCESS */
+        .success-icon{
+          width:80px;
+          height:80px;
+          border-radius:50%;
+          background:#e6f4ec;
+          color:var(--green);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:48px;
+          margin:0 auto 20px;
+          animation:successPop .5s;
+        }
+        @keyframes successPop{
+          0%{transform:scale(0)}
+          50%{transform:scale(1.1)}
+          100%{transform:scale(1)}
+        }
+
+        /* TOAST */
+        .toast{
+          position:fixed;
+          bottom:80px;
+          left:50%;
+          transform:translateX(-50%) translateY(100px);
+          background:var(--card);
+          color:var(--text);
+          padding:14px 20px;
+          border-radius:12px;
+          box-shadow:0 4px 16px rgba(0,0,0,.15);
+          z-index:1001;
+          opacity:0;
+          transition:all .3s;
+          border-left:4px solid var(--green);
+        }
+        .toast.show{
+          transform:translateX(-50%) translateY(0);
+          opacity:1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <h2>Loans</h2>
+        <button class="icon-btn" onclick="showInfo()">ℹ️</button>
+    </header>
+
+    <!-- ELIGIBILITY CARD -->
+    <section class="eligibility-card">
+        <div class="credit-score">
+            <div class="score-circle">
+                <div class="score-number">750</div>
+                <div class="score-label">Credit Score</div>
+            </div>
+            <div class="score-rating">⭐ Excellent</div>
+        </div>
+        <div class="loan-limit">
+            <div class="limit-label">You're eligible for up to</div>
+            <div class="limit-amount">₦100,000</div>
+        </div>
+        <div class="eligibility-status">✓ Pre-Approved • Instant Disbursement</div>
+    </section>
+
+    <!-- LOAN CALCULATOR -->
+    <div class="section-header">Loan Calculator</div>
+    <div class="calculator-card">
+        <div class="calc-group">
+            <div class="calc-label">
+                <span>Loan Amount</span>
+                <span class="calc-value" id="loanAmount">₦50,000</span>
+            </div>
+            <input type="range" class="slider" id="amountSlider" min="5000" max="100000" step="5000" value="50000">
+        </div>
+
+        <div class="calc-group">
+            <div class="calc-label">
+                <span>Repayment Period</span>
+                <span class="calc-value" id="loanPeriod">3 months</span>
+            </div>
+            <div class="period-options">
+                <button class="period-btn" onclick="setPeriod(1)">1 mo</button>
+                <button class="period-btn active" onclick="setPeriod(3)">3 mo</button>
+                <button class="period-btn" onclick="setPeriod(6)">6 mo</button>
+                <button class="period-btn" onclick="setPeriod(12)">12 mo</button>
+            </div>
+        </div>
+
+        <div class="breakdown-box">
+            <div class="breakdown-row">
+                <span>Loan Amount</span>
+                <span id="breakAmount">₦50,000</span>
+            </div>
+            <div class="breakdown-row">
+                <span>Interest (5% per month)</span>
+                <span id="breakInterest">₦7,500</span>
+            </div>
+            <div class="breakdown-row">
+                <span>Processing Fee</span>
+                <span id="breakFee">₦500</span>
+            </div>
+            <div class="breakdown-row total">
+                <span>Total Repayment</span>
+                <span style="color:var(--green)" id="breakTotal">₦58,000</span>
+            </div>
+            <div class="breakdown-row" style="border-top:1px solid rgba(0,0,0,.05);margin-top:8px;padding-top:8px">
+                <span>Monthly Payment</span>
+                <span style="font-weight:700" id="breakMonthly">₦19,333</span>
+            </div>
+        </div>
+
+        <button class="apply-btn" onclick="openApplication()">Apply for Loan</button>
+    </div>
+
+    <!-- LOAN PRODUCTS -->
+    <div class="section-header">Loan Products</div>
+    <div class="products-grid">
+        <div class="product-card" onclick="selectProduct('quick')">
+            <div class="product-header">
+                <div class="product-icon">⚡</div>
+                <div class="product-badge">INSTANT</div>
+            </div>
+            <div class="product-title">Quick Loan</div>
+            <div class="product-desc">Get instant cash within minutes. No paperwork required.</div>
+            <div class="product-details">
+                <div class="detail-item">
+                    <div class="detail-label">Amount</div>
+                    <div class="detail-value">₦5K - ₦50K</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Rate</div>
+                    <div class="detail-value">5% monthly</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Period</div>
+                    <div class="detail-value">1-3 months</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Approval</div>
+                    <div class="detail-value">Instant</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-card" onclick="selectProduct('personal')">
+            <div class="product-header">
+                <div class="product-icon">💼</div>
+                <div class="product-badge">POPULAR</div>
+            </div>
+            <div class="product-title">Personal Loan</div>
+            <div class="product-desc">Larger amounts with lower interest rates and flexible terms.</div>
+            <div class="product-details">
+                <div class="detail-item">
+                    <div class="detail-label">Amount</div>
+                    <div class="detail-value">₦50K - ₦500K</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Rate</div>
+                    <div class="detail-value">3% monthly</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Period</div>
+                    <div class="detail-value">3-12 months</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Approval</div>
+                    <div class="detail-value">24 hours</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTIVE LOANS -->
+    <div class="section-header">Active Loans</div>
+    <div class="active-loan-card">
+        <div class="loan-header">
+            <div class="loan-info">
+                <h3>Quick Loan</h3>
+                <p>Due: Jan 15, 2026</p>
+            </div>
+            <div class="loan-amount">
+                <div class="amount-label">Outstanding</div>
+                <div class="amount-value">₦15,000</div>
+            </div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" style="width:60%"></div>
+        </div>
+        <div class="progress-text">₦10,000 paid • ₦15,000 remaining</div>
+        <div class="loan-actions">
+            <button class="loan-btn secondary" onclick="viewSchedule()">View Schedule</button>
+            <button class="loan-btn primary" onclick="makePayment()">Pay Now</button>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bn">
+            <span class="bn-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="finance.html" class="bn active">
+            <span class="bn-icon">💼</span>
+            <span>Finance</span>
+        </a>
+        <a href="reward.html" class="bn">
+            <span class="bn-icon">🎁</span>
+            <span>Rewards</span>
+        </a>
+        <a href="me.html" class="bn">
+            <span class="bn-icon">👤</span>
+            <span>Me</span>
+        </a>
+    </nav>
+
+    <!-- APPLICATION MODAL -->
+    <div class="modal" id="applicationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Loan Application</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Employment Status</label>
+                    <select class="form-select" id="employment">
+                        <option>Employed (Full-time)</option>
+                        <option>Employed (Part-time)</option>
+                        <option>Self-employed</option>
+                        <option>Business Owner</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Monthly Income</label>
+                    <input type="number" class="form-input" placeholder="₦0" id="income">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Purpose of Loan</label>
+                    <select class="form-select" id="purpose">
+                        <option>Personal Expenses</option>
+                        <option>Business</option>
+                        <option>Education</option>
+                        <option>Medical</option>
+                        <option>Emergency</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms">
+                    <label for="terms" style="font-size:13px">I agree to the terms and conditions</label>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeApplication()">Cancel</button>
+                <button class="modal-btn primary" onclick="submitApplication()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUCCESS MODAL -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-body" style="text-align:center;padding:40px 20px">
+                <div class="success-icon">✓</div>
+                <div class="modal-title" style="margin-bottom:12px">Loan Approved!</div>
+                <p style="color:#888;margin-bottom:24px">Your loan of <b id="approvedAmount"></b> has been approved and will be disbursed to your account immediately.</p>
+                <button class="modal-btn primary" style="width:100%" onclick="closeSuccess()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <span id="toastMsg"></span>
+    </div>
+
+    <script>
+        let loanAmount = 50000;
+        let loanPeriod = 3;
+
+        // Update calculator
+        document.getElementById('amountSlider').addEventListener('input', (e) => {
+            loanAmount = parseInt(e.target.value);
+            updateCalculator();
+        });
+
+        function setPeriod(months) {
+            loanPeriod = months;
+            document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            updateCalculator();
+        }
+
+        function updateCalculator() {
+            const interest = loanAmount * 0.05 * loanPeriod;
+            const fee = 500;
+            const total = loanAmount + interest + fee;
+            const monthly = total / loanPeriod;
+
+            document.getElementById('loanAmount').textContent = `₦${loanAmount.toLocaleString()}`;
+            document.getElementById('loanPeriod').textContent = `${loanPeriod} month${loanPeriod > 1 ? 's' : ''}`;
+            document.getElementById('breakAmount').textContent = `₦${loanAmount.toLocaleString()}`;
+            document.getElementById('breakInterest').textContent = `₦${interest.toLocaleString()}`;
+            document.getElementById('breakFee').textContent = `₦${fee.toLocaleString()}`;
+            document.getElementById('breakTotal').textContent = `₦${total.toLocaleString()}`;
+            document.getElementById('breakMonthly').textContent = `₦${Math.round(monthly).toLocaleString()}`;
+        }
+
+        function openApplication() {
+            document.getElementById('applicationModal').classList.add('show');
+        }
+
+        function closeApplication() {
+            document.getElementById('applicationModal').classList.remove('show');
+        }
+
+        function submitApplication() {
+            const terms = document.getElementById('terms').checked;
+            const income = document.getElementById('income').value;
+
+            if (!income) {
+                showToast('❌ Please enter your monthly income');
+                return;
+            }
+
+            if (!terms) {
+                showToast('❌ Please accept terms and conditions');
+                return;
+            }
+
+            closeApplication();
+            showToast('⏳ Processing application...');
+
+            setTimeout(() => {
+                document.getElementById('approvedAmount').textContent = `₦${loanAmount.toLocaleString()}`;
+                document.getElementById('successModal').classList.add('show');
+            }, 2000);
+        }
+
+        function closeSuccess() {
+            document.getElementById('successModal').classList.remove('show');
+            showToast('✅ Loan disbursed successfully!');
+        }
+
+        function selectProduct(type) {
+            if (type === 'quick') {
+                document.getElementById('amountSlider').value = 25000;
+                loanAmount = 25000;
+                setPeriod(1);
+            } else {
+                document.getElementById('amountSlider').value = 100000;
+                loanAmount = 100000;
+                setPeriod(6);
+            }
+            updateCalculator();
+            showToast(`✅ ${type === 'quick' ? 'Quick' : 'Personal'} Loan selected`);
+            window.scrollTo({top: document.querySelector('.calculator-card').offsetTop - 60, behavior: 'smooth'});
+        }
+
+        function viewSchedule() {
+            showToast('📅 Viewing repayment schedule...');
+        }
+
+        function makePayment() {
+            showToast('💳 Opening payment...');
+        }
+
+        function goBack() {
+            window.location.href = 'finance.html';
+        }
+
+        function showInfo() {
+            showToast('ℹ️ Loan interest: 5% monthly, Processing fee: ₦500');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('show');
+            });
+        });
+
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+        if(darkMode) document.body.classList.add('dark');
+
+        updateCalculator();
+    </script>
+
+</body>
+</html>

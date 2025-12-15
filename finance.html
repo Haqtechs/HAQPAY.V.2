@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance - HaqPay</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HaqPay">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+    <style>
+        :root{
+          --green:#008037;
+          --green-strong:#00a84e;
+          --bg:#f3f8f5;
+          --card:#fff;
+          --text:#111;
+        }
+
+        body.dark{
+          --bg:#0f1a14;
+          --card:#15261d;
+          --text:#f2f2f2;
+        }
+
+        *{box-sizing:border-box}
+        body{
+          margin:0;
+          font-family:Inter,Arial,sans-serif;
+          background:var(--bg);
+          color:var(--text);
+          padding-bottom:70px;
+        }
+
+        /* HEADER */
+        .header{
+          background:var(--green);
+          color:#fff;
+          padding:16px;
+          display:flex;
+          align-items:center;
+          gap:12px;
+          position:sticky;
+          top:0;
+          z-index:100;
+          box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+        .back-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+          transition:all .2s;
+        }
+        .back-btn:hover{background:rgba(255,255,255,.25)}
+        .header h2{
+          margin:0;
+          font-size:18px;
+          font-weight:700;
+          flex:1;
+        }
+        .theme-toggle{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+        }
+
+        /* BALANCE CARD */
+        .balance-card{
+          margin:16px;
+          background:linear-gradient(135deg, var(--green-strong) 0%, var(--green) 100%);
+          color:#fff;
+          padding:20px;
+          border-radius:16px;
+          box-shadow:0 4px 12px rgba(0,128,55,.2);
+        }
+        .balance-header{
+          display:flex;
+          justify-content:space-between;
+          align-items:flex-start;
+          margin-bottom:20px;
+        }
+        .balance-info small{
+          opacity:.9;
+          font-size:13px;
+        }
+        .balance-info h1{
+          margin:8px 0 0;
+          font-size:32px;
+          font-weight:800;
+        }
+        .eye-btn{
+          background:rgba(255,255,255,.2);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:50%;
+          cursor:pointer;
+          font-size:18px;
+          transition:all .2s;
+        }
+        .eye-btn:hover{background:rgba(255,255,255,.3)}
+        
+        .finance-buttons{
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:10px;
+        }
+        .btn-fin{
+          text-decoration:none;
+          text-align:center;
+          padding:12px;
+          border-radius:10px;
+          font-weight:600;
+          font-size:14px;
+          transition:all .2s;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          gap:6px;
+        }
+        .btn-fin.primary{
+          background:rgba(255,255,255,.95);
+          color:var(--green);
+        }
+        .btn-fin.secondary{
+          background:rgba(255,255,255,.2);
+          color:#fff;
+          border:1px solid rgba(255,255,255,.3);
+        }
+        .btn-fin:active{transform:scale(.97)}
+
+        /* SECTION HEADER */
+        .section-header{
+          padding:20px 16px 12px;
+          font-size:16px;
+          font-weight:700;
+          color:var(--text);
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+        }
+        .see-all{
+          font-size:13px;
+          color:var(--green);
+          text-decoration:none;
+          font-weight:600;
+        }
+
+        /* QUICK SEND */
+        .quick-send{
+          padding:0 16px 16px;
+          overflow-x:auto;
+          -webkit-overflow-scrolling:touch;
+        }
+        .quick-send::-webkit-scrollbar{display:none}
+        .beneficiaries{
+          display:flex;
+          gap:12px;
+        }
+        .beneficiary{
+          text-align:center;
+          text-decoration:none;
+          color:var(--text);
+          min-width:70px;
+          cursor:pointer;
+        }
+        .beneficiary-avatar{
+          width:56px;
+          height:56px;
+          border-radius:50%;
+          background:var(--green);
+          color:#fff;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:24px;
+          margin:0 auto 8px;
+          box-shadow:0 2px 8px rgba(0,128,55,.15);
+        }
+        .beneficiary-name{
+          font-size:12px;
+          font-weight:600;
+        }
+
+        /* QUICK ACTIONS */
+        .quick-actions{
+          padding:0 16px 16px;
+        }
+        .actions-grid{
+          display:grid;
+          grid-template-columns:repeat(3,1fr);
+          gap:10px;
+        }
+        .action-box{
+          background:var(--card);
+          padding:16px 12px;
+          border-radius:12px;
+          text-align:center;
+          text-decoration:none;
+          color:var(--text);
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          transition:all .2s;
+        }
+        .action-box:hover{
+          transform:translateY(-2px);
+          box-shadow:0 4px 12px rgba(0,0,0,.1);
+        }
+        .action-icon{
+          width:44px;
+          height:44px;
+          border-radius:50%;
+          background:var(--green);
+          color:#fff;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          margin:0 auto 10px;
+          font-size:22px;
+        }
+        .action-name{
+          font-size:13px;
+          font-weight:600;
+        }
+
+        /* RECENT TRANSACTIONS */
+        .transactions{
+          padding:0 16px 16px;
+        }
+        .transaction-list{
+          background:var(--card);
+          border-radius:12px;
+          overflow:hidden;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+        }
+        .transaction-item{
+          display:flex;
+          align-items:center;
+          padding:14px;
+          border-bottom:1px solid rgba(0,0,0,.05);
+          text-decoration:none;
+          color:var(--text);
+        }
+        .transaction-item:last-child{border-bottom:none}
+        .transaction-icon{
+          width:44px;
+          height:44px;
+          border-radius:50%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:20px;
+          margin-right:12px;
+        }
+        .transaction-icon.credit{background:#e6f4ec}
+        .transaction-icon.debit{background:#fff0f0}
+        .transaction-details{
+          flex:1;
+        }
+        .transaction-title{
+          font-weight:600;
+          font-size:14px;
+          margin-bottom:4px;
+        }
+        .transaction-date{
+          font-size:12px;
+          color:#888;
+        }
+        .transaction-amount{
+          font-weight:700;
+          font-size:15px;
+        }
+        .transaction-amount.credit{color:#00b894}
+        .transaction-amount.debit{color:#ff6b6b}
+
+        /* VIEW ALL BUTTON */
+        .view-all-container{
+          padding:0 16px 16px;
+        }
+        .view-all-btn{
+          display:block;
+          width:100%;
+          text-decoration:none;
+          text-align:center;
+          padding:14px;
+          background:var(--card);
+          color:var(--green);
+          border-radius:12px;
+          font-weight:600;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          transition:all .2s;
+        }
+        .view-all-btn:hover{
+          transform:translateY(-2px);
+          box-shadow:0 4px 12px rgba(0,0,0,.1);
+        }
+
+        /* SPENDING INSIGHT */
+        .insight-card{
+          margin:0 16px 16px;
+          background:var(--card);
+          padding:16px;
+          border-radius:12px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+        }
+        .insight-header{
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom:12px;
+        }
+        .insight-title{
+          font-weight:700;
+          font-size:15px;
+        }
+        .insight-period{
+          font-size:12px;
+          color:#888;
+        }
+        .spending-bar{
+          height:8px;
+          background:#e0e0e0;
+          border-radius:4px;
+          overflow:hidden;
+          margin-bottom:12px;
+        }
+        .spending-progress{
+          height:100%;
+          background:linear-gradient(90deg, var(--green-strong), var(--green));
+          border-radius:4px;
+          width:65%;
+          transition:width .5s;
+        }
+        .spending-stats{
+          display:flex;
+          justify-content:space-between;
+          font-size:13px;
+        }
+        .stat{
+          text-align:center;
+        }
+        .stat-value{
+          font-weight:700;
+          color:var(--green);
+          margin-bottom:4px;
+        }
+        .stat-label{
+          color:#888;
+          font-size:11px;
+        }
+
+        /* BOTTOM NAV */
+        .bottom-nav{
+          position:fixed;
+          bottom:0;
+          left:0;
+          right:0;
+          height:60px;
+          background:var(--card);
+          display:flex;
+          border-top:1px solid rgba(0,0,0,.08);
+          box-shadow:0 -2px 10px rgba(0,0,0,.05);
+          z-index:100;
+        }
+        .bn{
+          flex:1;
+          text-decoration:none;
+          color:#666;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          font-size:11px;
+          font-weight:500;
+          transition:all .2s;
+          position:relative;
+        }
+        .bn::before{
+          content:"";
+          position:absolute;
+          top:0;
+          width:0;
+          height:3px;
+          background:var(--green);
+          transition:width .3s;
+        }
+        .bn.active{color:var(--green)}
+        .bn.active::before{width:60%}
+        .bn-icon{
+          font-size:20px;
+          margin-bottom:2px;
+        }
+
+        /* EMPTY STATE */
+        .empty-state{
+          text-align:center;
+          padding:40px 20px;
+          color:#888;
+        }
+        .empty-state-icon{
+          font-size:48px;
+          margin-bottom:12px;
+          opacity:.5;
+        }
+
+        /* TOAST */
+        .toast{
+          position:fixed;
+          bottom:80px;
+          left:50%;
+          transform:translateX(-50%) translateY(100px);
+          background:var(--card);
+          color:var(--text);
+          padding:14px 20px;
+          border-radius:12px;
+          box-shadow:0 4px 16px rgba(0,0,0,.15);
+          display:flex;
+          align-items:center;
+          gap:10px;
+          z-index:1001;
+          opacity:0;
+          transition:all .3s;
+          max-width:90%;
+          border-left:4px solid var(--green);
+        }
+        .toast.show{
+          transform:translateX(-50%) translateY(0);
+          opacity:1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <button class="back-btn" id="backBtn">←</button>
+        <h2>Finance</h2>
+        <button class="theme-toggle" id="themeBtn">🌙</button>
+    </header>
+
+    <!-- BALANCE CARD -->
+    <section class="balance-card">
+        <div class="balance-header">
+            <div class="balance-info">
+                <small>Available Balance</small>
+                <h1 id="balance">****</h1>
+            </div>
+            <button class="eye-btn" id="eyeBtn">👁️</button>
+        </div>
+        <div class="finance-buttons">
+            <a href="add.html" class="btn-fin primary">
+                <span>💰</span> Add Money
+            </a>
+            <a href="saving.html" class="btn-fin secondary">
+                <span>🪙</span> Savings
+            </a>
+        </div>
+    </section>
+
+    <!-- SPENDING INSIGHT -->
+    <section class="insight-card">
+        <div class="insight-header">
+            <span class="insight-title">December Spending</span>
+            <span class="insight-period">14 days left</span>
+        </div>
+        <div class="spending-bar">
+            <div class="spending-progress"></div>
+        </div>
+        <div class="spending-stats">
+            <div class="stat">
+                <div class="stat-value">₦32,500</div>
+                <div class="stat-label">Spent</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">₦50,000</div>
+                <div class="stat-label">Budget</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">₦17,500</div>
+                <div class="stat-label">Remaining</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUICK SEND -->
+    <div class="section-header">
+        <span>Quick Send</span>
+        <a href="#" class="see-all" id="addNewBtn">Add New</a>
+    </div>
+    <section class="quick-send">
+        <div class="beneficiaries">
+            <div class="beneficiary" data-name="Sarah">
+                <div class="beneficiary-avatar">👩</div>
+                <div class="beneficiary-name">precious</div>
+            </div>
+            <div class="beneficiary" data-name="John">
+                <div class="beneficiary-avatar">👨</div>
+                <div class="beneficiary-name">Abdulhaq</div>
+            </div>
+            <div class="beneficiary" data-name="Mom">
+                <div class="beneficiary-avatar">💝</div>
+                <div class="beneficiary-name">Mom</div>
+            </div>
+            <div class="beneficiary" data-name="Boss">
+                <div class="beneficiary-avatar">🧒</div>
+                <div class="beneficiary-name">seyi</div>
+            </div>
+            <div class="beneficiary" data-name="Emma">
+                <div class="beneficiary-avatar">🧒</div>
+                <div class="beneficiary-name">fashina khalid</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUICK ACTIONS -->
+    <div class="section-header">
+        <span>Quick Actions</span>
+    </div>
+    <section class="quick-actions">
+        <div class="actions-grid">
+            <a href="transfer.html" class="action-box">
+                <div class="action-icon">🔁</div>
+                <div class="action-name">Send Money</div>
+            </a>
+            <a href="bill.html" class="action-box">
+                <div class="action-icon">💡</div>
+                <div class="action-name">Pay Bills</div>
+            </a>
+            <a href="add.html" class="action-box">
+                <div class="action-icon">💰</div>
+                <div class="action-name">Add Money</div>
+            </a>
+        </div>
+    </section>
+
+    <!-- RECENT TRANSACTIONS -->
+    <div class="section-header">
+        <span>Recent Transactions</span>
+        <a href="history.html" class="see-all">See All</a>
+    </div>
+    <section class="transactions">
+        <div class="transaction-list" id="transactionList">
+            <!-- Transactions will be loaded here -->
+        </div>
+    </section>
+
+    <!-- VIEW ALL HISTORY -->
+    <div class="view-all-container">
+        <a href="history.html" class="view-all-btn">
+            View Full Transaction History →
+        </a>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bn">
+            <span class="bn-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="finance.html" class="bn active">
+            <span class="bn-icon">💼</span>
+            <span>Finance</span>
+        </a>
+        <a href="reward.html" class="bn">
+            <span class="bn-icon">🎁</span>
+            <span>Rewards</span>
+        </a>
+        <a href="me.html" class="bn">
+            <span class="bn-icon">👤</span>
+            <span>Me</span>
+        </a>
+    </nav>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <span id="toastMsg"></span>
+    </div>
+
+    <script>
+        // Mock transaction data
+        const transactions = [
+            {
+                type: 'credit',
+                icon: '💰',
+                title: 'Salary Payment',
+                date: 'Today, 09:30 AM',
+                amount: '+₦150,000.00'
+            },
+            {
+                type: 'debit',
+                icon: '🛒',
+                title: 'Shoprite Purchase',
+                date: 'Today, 11:45 AM',
+                amount: '-₦8,500.00'
+            },
+            {
+                type: 'debit',
+                icon: '💡',
+                title: 'EKEDC Bill Payment',
+                date: 'Yesterday, 03:20 PM',
+                amount: '-₦4,200.00'
+            },
+            {
+                type: 'credit',
+                icon: '🎁',
+                title: 'Cashback Reward',
+                date: 'Yesterday, 05:15 PM',
+                amount: '+₦250.00'
+            },
+            {
+                type: 'debit',
+                icon: '📱',
+                title: 'MTN Airtime',
+                date: 'Dec 12, 08:30 AM',
+                amount: '-₦1,000.00'
+            }
+        ];
+
+        // Load transactions
+        function loadTransactions() {
+            const list = document.getElementById('transactionList');
+            
+            if (transactions.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div>No transactions yet</div>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = transactions.map(t => `
+                <div class="transaction-item">
+                    <div class="transaction-icon ${t.type}">
+                        ${t.icon}
+                    </div>
+                    <div class="transaction-details">
+                        <div class="transaction-title">${t.title}</div>
+                        <div class="transaction-date">${t.date}</div>
+                    </div>
+                    <div class="transaction-amount ${t.type}">
+                        ${t.amount}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Balance visibility
+        let balanceVisible = false;
+        const actualBalance = '₦50,000.00';
+
+        function toggleBalance() {
+            const balanceEl = document.getElementById('balance');
+            balanceVisible = !balanceVisible;
+            balanceEl.textContent = balanceVisible ? actualBalance : '****';
+            showToast(balanceVisible ? '👁️ Balance shown' : '🙈 Balance hidden');
+        }
+
+        // Dark mode
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+        if(darkMode) document.body.classList.add('dark');
+
+        function toggleDark() {
+            document.body.classList.toggle('dark');
+            darkMode = !darkMode;
+            localStorage.setItem('darkMode', darkMode);
+            showToast(darkMode ? '🌙 Dark mode on' : '☀️ Light mode on');
+        }
+
+        // Quick send
+        function quickSend(name) {
+            showToast(`💸 Opening transfer to ${name}...`);
+            setTimeout(() => {
+                window.location.href = 'transfer.html?beneficiary=' + name;
+            }, 800);
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Back button
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        
+        // Event listeners
+        document.getElementById('backBtn').addEventListener('click', goBack);
+        document.getElementById('themeBtn').addEventListener('click', toggleDark);
+        document.getElementById('eyeBtn').addEventListener('click', toggleBalance);
+        
+        document.getElementById('addNewBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            showToast('✨ Add beneficiaries in Settings');
+        });
+
+        // Quick send beneficiaries
+        document.querySelectorAll('.beneficiary').forEach(ben => {
+            ben.addEventListener('click', () => {
+                const name = ben.getAttribute('data-name');
+                quickSend(name);
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTransactions();
+            
+            // Animate spending progress on load
+            setTimeout(() => {
+                document.querySelector('.spending-progress').style.width = '65%';
+            }, 300);
+        });
+    </script>
+
+</body>
+</html>

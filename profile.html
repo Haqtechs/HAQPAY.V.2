@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - HaqPay</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HaqPay">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+    <style>
+        :root{
+          --green:#008037;
+          --green-strong:#00a84e;
+          --bg:#f3f8f5;
+          --card:#fff;
+          --text:#111;
+        }
+
+        body.dark{
+          --bg:#0f1a14;
+          --card:#15261d;
+          --text:#f2f2f2;
+        }
+
+        *{box-sizing:border-box}
+        body{
+          margin:0;
+          font-family:Inter,Arial,sans-serif;
+          background:var(--bg);
+          color:var(--text);
+          padding-bottom:80px;
+        }
+
+        /* HEADER */
+        .header{
+          background:#fff;
+          color:var(--text);
+          padding:16px;
+          display:flex;
+          align-items:center;
+          gap:12px;
+          position:sticky;
+          top:0;
+          z-index:100;
+          box-shadow:0 2px 8px rgba(0,0,0,.05);
+        }
+        .back-btn{
+          background:none;
+          border:none;
+          color:var(--text);
+          width:36px;
+          height:36px;
+          cursor:pointer;
+          font-size:24px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+        }
+        .header h2{
+          margin:0;
+          font-size:18px;
+          font-weight:600;
+          flex:1;
+        }
+
+        /* PROFILE SECTION */
+        .profile-section{
+          background:var(--card);
+          padding:32px 16px;
+          text-align:center;
+        }
+        .avatar-container{
+          position:relative;
+          width:100px;
+          height:100px;
+          margin:0 auto 16px;
+        }
+        .avatar{
+          width:100px;
+          height:100px;
+          border-radius:50%;
+          object-fit:cover;
+          border:3px solid #e0e0e0;
+        }
+        .camera-btn{
+          position:absolute;
+          bottom:0;
+          right:0;
+          width:36px;
+          height:36px;
+          border-radius:50%;
+          background:#666;
+          color:#fff;
+          border:3px solid var(--card);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          cursor:pointer;
+          font-size:18px;
+        }
+        .camera-btn:hover{background:#555}
+        #avatarInput{display:none}
+        .profile-name{
+          font-size:20px;
+          font-weight:700;
+          margin-bottom:8px;
+        }
+
+        /* ACCOUNT INFO */
+        .account-info{
+          background:var(--card);
+          margin:12px 16px;
+          border-radius:12px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          overflow:hidden;
+        }
+        .info-row{
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          padding:16px;
+          border-bottom:1px solid rgba(0,0,0,.05);
+        }
+        .info-row:last-child{border:none}
+        .info-label{
+          font-size:14px;
+          color:#666;
+        }
+        .info-value{
+          font-size:14px;
+          font-weight:600;
+          color:var(--text);
+          display:flex;
+          align-items:center;
+          gap:8px;
+        }
+        .copy-btn{
+          background:none;
+          border:none;
+          color:var(--green);
+          cursor:pointer;
+          font-size:18px;
+          padding:0;
+        }
+        .tier-badge{
+          background:#fff4e6;
+          color:#d97706;
+          padding:6px 12px;
+          border-radius:16px;
+          font-size:12px;
+          font-weight:600;
+          display:flex;
+          align-items:center;
+          gap:6px;
+        }
+        .upgrade-btn{
+          background:#ffebee;
+          color:#ff6b6b;
+          padding:6px 12px;
+          border-radius:16px;
+          font-size:12px;
+          font-weight:600;
+          border:none;
+          cursor:pointer;
+          display:flex;
+          align-items:center;
+          gap:4px;
+        }
+
+        /* FORM SECTION */
+        .form-section{
+          background:var(--card);
+          margin:12px 16px;
+          border-radius:12px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          overflow:hidden;
+        }
+        .form-row{
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          padding:16px;
+          border-bottom:1px solid rgba(0,0,0,.05);
+          cursor:pointer;
+          transition:background .2s;
+        }
+        .form-row:last-child{border:none}
+        .form-row:hover{background:rgba(0,128,55,.02)}
+        .form-row:active{background:rgba(0,128,55,.05)}
+        .form-label{
+          font-size:14px;
+          color:var(--text);
+          font-weight:500;
+        }
+        .form-value{
+          font-size:14px;
+          color:#888;
+          display:flex;
+          align-items:center;
+          gap:8px;
+        }
+        .form-arrow{
+          color:#ccc;
+          font-size:18px;
+        }
+
+        /* EDIT MODAL */
+        .modal{
+          position:fixed;
+          inset:0;
+          background:rgba(0,0,0,.6);
+          display:none;
+          align-items:flex-end;
+          justify-content:center;
+          z-index:1000;
+          backdrop-filter:blur(4px);
+        }
+        .modal.show{display:flex}
+        .modal-content{
+          background:var(--card);
+          border-radius:16px 16px 0 0;
+          width:100%;
+          max-width:600px;
+          padding:24px;
+          animation:slideUp .3s;
+        }
+        @keyframes slideUp{
+          from{transform:translateY(100%)}
+          to{transform:translateY(0)}
+        }
+        .modal-header{
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom:20px;
+        }
+        .modal-title{
+          font-weight:700;
+          font-size:18px;
+        }
+        .close-btn{
+          background:none;
+          border:none;
+          font-size:28px;
+          cursor:pointer;
+          color:var(--text);
+          width:32px;
+          height:32px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+        }
+        .input-group{
+          margin-bottom:20px;
+        }
+        .input-label{
+          display:block;
+          font-size:13px;
+          font-weight:600;
+          margin-bottom:8px;
+          color:var(--text);
+        }
+        .input-field{
+          width:100%;
+          padding:14px;
+          border:2px solid #e0e0e0;
+          border-radius:10px;
+          font-size:14px;
+          background:var(--card);
+          color:var(--text);
+        }
+        .input-field:focus{
+          outline:none;
+          border-color:var(--green);
+        }
+        .select-field{
+          width:100%;
+          padding:14px;
+          border:2px solid #e0e0e0;
+          border-radius:10px;
+          font-size:14px;
+          background:var(--card);
+          color:var(--text);
+        }
+        .save-btn{
+          width:100%;
+          background:var(--green);
+          color:#fff;
+          border:none;
+          padding:16px;
+          border-radius:10px;
+          font-weight:600;
+          font-size:14px;
+          cursor:pointer;
+        }
+        .save-btn:active{transform:scale(.98)}
+
+        /* TOAST */
+        .toast{
+          position:fixed;
+          bottom:20px;
+          left:50%;
+          transform:translateX(-50%) translateY(100px);
+          background:var(--card);
+          color:var(--text);
+          padding:14px 20px;
+          border-radius:12px;
+          box-shadow:0 4px 16px rgba(0,0,0,.15);
+          display:flex;
+          align-items:center;
+          gap:10px;
+          z-index:1001;
+          opacity:0;
+          transition:all .3s;
+          max-width:90%;
+          border-left:4px solid var(--green);
+        }
+        .toast.show{
+          transform:translateX(-50%) translateY(0);
+          opacity:1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <button class="back-btn" id="backBtn">‹</button>
+        <h2>My Profile</h2>
+    </header>
+
+    <!-- PROFILE PICTURE SECTION -->
+    <section class="profile-section">
+        <div class="avatar-container">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Haq" class="avatar" id="avatarImage">
+            <label for="avatarInput" class="camera-btn">📷</label>
+            <input type="file" id="avatarInput" accept="image/*">
+        </div>
+        <div class="profile-name" id="displayName">HAQ</div>
+    </section>
+
+    <!-- ACCOUNT INFO -->
+    <div class="account-info">
+        <div class="info-row">
+            <div class="info-label">HaqPay Account Number</div>
+            <div class="info-value">
+                <span id="accountNumber">9137109134</span>
+                <button class="copy-btn" onclick="copyAccount()">📋</button>
+            </div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Account Tier</div>
+            <div class="info-value">
+                <span class="tier-badge">🥉 Tier 1</span>
+                <button class="upgrade-btn" onclick="upgrade()">Upgrade ›</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PERSONAL INFO FORM -->
+    <div class="form-section">
+        <div class="form-row" onclick="editField('fullName')">
+            <div class="form-label">Full Name</div>
+            <div class="form-value">
+                <span id="fullNameDisplay">AZEEMAH DOLAPO ABDULGANIY</span>
+                <span class="form-arrow">›</span>
+            </div>
+        </div>
+
+        <div class="form-row" onclick="editField('mobile')">
+            <div class="form-label">Mobile Number</div>
+            <div class="form-value">
+                <span id="mobileDisplay">+2349137109134</span>
+                <span class="form-arrow">›</span>
+            </div>
+        </div>
+
+        <div class="form-row" onclick="editField('nickname')">
+            <div class="form-label">Nickname</div>
+            <div class="form-value">
+                <span id="nicknameDisplay" style="color:#ccc">Enter Nickname</span>
+                <span class="form-arrow">›</span>
+            </div>
+        </div>
+
+        <div class="form-row" onclick="editField('gender')">
+            <div class="form-label">Gender</div>
+            <div class="form-value">
+                <span id="genderDisplay">Female</span>
+                <span class="form-arrow">›</span>
+            </div>
+        </div>
+
+        <div class="form-row" onclick="editField('dob')">
+            <div class="form-label">Date of Birth</div>
+            <div class="form-value">
+                <span id="dobDisplay">**-**-29</span>
+                <span class="form-arrow">›</span>
+            </div>
+        </div>
+
+        <div class="form-row" onclick="editField('email')">
+            <div class="form-label">Email</div>
+            <div class="form-value">
+                <span id="emailDisplay">A*@gmail.com</span>
+                <span class="form-arrow">›</span>
+            </div>
+        </div>
+
+        <div class="form-row" onclick="editField('address')">
+            <div class="form-label">Address</div>
+            <div class="form-value">
+                <span id="addressDisplay" style="color:#ccc">Enter Address</span>
+                <span class="form-arrow">›</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Edit Field</div>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <div id="modalBody">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <span id="toastMsg"></span>
+    </div>
+
+    <script>
+        // User data
+        let userData = {
+            fullName: 'AZEEMAH DOLAPO ABDULGANIY',
+            mobile: '+2349137109134',
+            nickname: '',
+            gender: 'Female',
+            dob: '**-**-29',
+            email: 'A*@gmail.com',
+            address: ''
+        };
+
+        // Avatar upload
+        document.getElementById('avatarInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 5000000) { // 5MB limit
+                    showToast('❌ Image too large. Max 5MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('avatarImage').src = event.target.result;
+                    showToast('✅ Profile picture updated!');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Copy account number
+        function copyAccount() {
+            const accountNumber = document.getElementById('accountNumber').textContent;
+            navigator.clipboard.writeText(accountNumber).then(() => {
+                showToast('✅ Account number copied!');
+            }).catch(() => {
+                showToast('❌ Failed to copy');
+            });
+        }
+
+        // Upgrade account
+        function upgrade() {
+            showToast('🏆 Upgrade to Tier 2 for higher limits!');
+        }
+
+        // Edit field
+        function editField(field) {
+            const modal = document.getElementById('editModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            const fieldLabels = {
+                fullName: 'Full Name',
+                mobile: 'Mobile Number',
+                nickname: 'Nickname',
+                gender: 'Gender',
+                dob: 'Date of Birth',
+                email: 'Email',
+                address: 'Address'
+            };
+            
+            modalTitle.textContent = `Edit ${fieldLabels[field]}`;
+            
+            if (field === 'gender') {
+                modalBody.innerHTML = `
+                    <div class="input-group">
+                        <label class="input-label">${fieldLabels[field]}</label>
+                        <select class="select-field" id="editInput">
+                            <option value="Male" ${userData.gender === 'Male' ? 'selected' : ''}>Male</option>
+                            <option value="Female" ${userData.gender === 'Female' ? 'selected' : ''}>Female</option>
+                            <option value="Other" ${userData.gender === 'Other' ? 'selected' : ''}>Other</option>
+                        </select>
+                    </div>
+                    <button class="save-btn" onclick="saveField('${field}')">Save</button>
+                `;
+            } else if (field === 'dob') {
+                modalBody.innerHTML = `
+                    <div class="input-group">
+                        <label class="input-label">${fieldLabels[field]}</label>
+                        <input type="date" class="input-field" id="editInput" value="">
+                    </div>
+                    <button class="save-btn" onclick="saveField('${field}')">Save</button>
+                `;
+            } else {
+                const inputType = field === 'email' ? 'email' : field === 'mobile' ? 'tel' : 'text';
+                modalBody.innerHTML = `
+                    <div class="input-group">
+                        <label class="input-label">${fieldLabels[field]}</label>
+                        <input type="${inputType}" class="input-field" id="editInput" 
+                               value="${userData[field]}" placeholder="Enter ${fieldLabels[field].toLowerCase()}">
+                    </div>
+                    <button class="save-btn" onclick="saveField('${field}')">Save</button>
+                `;
+            }
+            
+            modal.classList.add('show');
+            setTimeout(() => document.getElementById('editInput').focus(), 300);
+        }
+
+        // Save field
+        function saveField(field) {
+            const input = document.getElementById('editInput');
+            const newValue = input.value.trim();
+            
+            if (!newValue && field !== 'nickname' && field !== 'address') {
+                showToast('❌ This field cannot be empty');
+                return;
+            }
+            
+            if (field === 'email' && newValue && !newValue.includes('@')) {
+                showToast('❌ Invalid email address');
+                return;
+            }
+            
+            userData[field] = newValue;
+            const displayElement = document.getElementById(`${field}Display`);
+            
+            if (newValue) {
+                displayElement.textContent = newValue;
+                displayElement.style.color = 'var(--text)';
+            } else {
+                displayElement.textContent = field === 'nickname' ? 'Enter Nickname' : 'Enter Address';
+                displayElement.style.color = '#ccc';
+            }
+            
+            if (field === 'fullName') {
+                document.getElementById('displayName').textContent = newValue.split(' ')[0].toUpperCase();
+            }
+            
+            closeModal();
+            showToast('✅ Profile updated!');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('show');
+        }
+
+        // Event listeners
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = 'me.html';
+        });
+
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+
+        document.getElementById('editModal').addEventListener('click', (e) => {
+            if (e.target.id === 'editModal') {
+                closeModal();
+            }
+        });
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Dark mode
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+        if(darkMode) document.body.classList.add('dark');
+    </script>
+
+</body>
+</html>

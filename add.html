@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Money - HaqPay</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HaqPay">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+    <style>
+        :root{
+          --green:#008037;
+          --green-strong:#00a84e;
+          --bg:#f3f8f5;
+          --card:#fff;
+          --text:#111;
+        }
+
+        body.dark{
+          --bg:#0f1a14;
+          --card:#15261d;
+          --text:#f2f2f2;
+        }
+
+        *{box-sizing:border-box}
+        body{
+          margin:0;
+          font-family:Inter,Arial,sans-serif;
+          background:var(--bg);
+          color:var(--text);
+          padding-bottom:70px;
+        }
+
+        /* HEADER */
+        .header{
+          background:var(--green);
+          color:#fff;
+          padding:16px;
+          display:flex;
+          align-items:center;
+          gap:12px;
+          position:sticky;
+          top:0;
+          z-index:100;
+          box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+        .back-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+          transition:all .2s;
+        }
+        .back-btn:hover{background:rgba(255,255,255,.25)}
+        .header h2{
+          margin:0;
+          font-size:18px;
+          font-weight:700;
+          flex:1;
+        }
+        .icon-btn{
+          background:rgba(255,255,255,.15);
+          border:none;
+          color:#fff;
+          width:36px;
+          height:36px;
+          border-radius:8px;
+          cursor:pointer;
+          font-size:18px;
+        }
+
+        /* ACCOUNT CARD - HERO */
+        .account-card{
+          margin:16px;
+          background:linear-gradient(135deg, var(--green-strong) 0%, var(--green) 100%);
+          color:#fff;
+          padding:24px;
+          border-radius:16px;
+          box-shadow:0 4px 12px rgba(0,128,55,.2);
+          text-align:center;
+        }
+        .account-label{
+          font-size:13px;
+          opacity:.9;
+          margin-bottom:12px;
+        }
+        .account-number{
+          font-size:36px;
+          font-weight:800;
+          letter-spacing:2px;
+          margin-bottom:8px;
+        }
+        .bank-name{
+          font-size:15px;
+          opacity:.95;
+          margin-bottom:20px;
+        }
+        .account-actions{
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:10px;
+        }
+        .action-btn{
+          background:rgba(255,255,255,.95);
+          color:var(--green);
+          border:none;
+          padding:12px;
+          border-radius:10px;
+          font-weight:600;
+          font-size:14px;
+          cursor:pointer;
+          transition:all .2s;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          gap:6px;
+        }
+        .action-btn:active{transform:scale(.97)}
+        .action-btn.secondary{
+          background:rgba(255,255,255,.2);
+          color:#fff;
+        }
+
+        /* INFO BANNER */
+        .info-banner{
+          margin:0 16px 16px;
+          background:#fff4e6;
+          padding:14px;
+          border-radius:12px;
+          display:flex;
+          align-items:center;
+          gap:12px;
+          font-size:13px;
+          color:#d97706;
+        }
+        .info-icon{
+          font-size:20px;
+          flex-shrink:0;
+        }
+
+        /* SECTION */
+        .section-header{
+          padding:20px 16px 12px;
+          font-size:16px;
+          font-weight:700;
+          color:var(--text);
+        }
+
+        /* METHOD CARDS */
+        .method-list{
+          padding:0 16px 16px;
+        }
+        .method-card{
+          background:var(--card);
+          border-radius:12px;
+          padding:18px;
+          margin-bottom:12px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          cursor:pointer;
+          transition:all .2s;
+        }
+        .method-card:hover{
+          transform:translateY(-2px);
+          box-shadow:0 4px 12px rgba(0,0,0,.1);
+        }
+        .method-header{
+          display:flex;
+          align-items:center;
+          gap:12px;
+          margin-bottom:12px;
+        }
+        .method-icon{
+          width:44px;
+          height:44px;
+          border-radius:50%;
+          background:var(--green);
+          color:#fff;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:22px;
+          flex-shrink:0;
+        }
+        .method-info{
+          flex:1;
+        }
+        .method-title{
+          font-weight:700;
+          font-size:15px;
+          margin-bottom:4px;
+        }
+        .method-desc{
+          font-size:13px;
+          color:#888;
+        }
+        .method-badge{
+          background:#e6f4ec;
+          color:var(--green);
+          padding:4px 10px;
+          border-radius:12px;
+          font-size:11px;
+          font-weight:600;
+        }
+        .method-details{
+          margin-top:12px;
+          padding-top:12px;
+          border-top:1px solid rgba(0,0,0,.05);
+        }
+        .ussd-list{
+          margin:8px 0;
+        }
+        .ussd-item{
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          padding:10px;
+          background:rgba(0,128,55,.05);
+          border-radius:8px;
+          margin-bottom:6px;
+          font-size:13px;
+        }
+        .ussd-bank{
+          font-weight:600;
+          color:var(--text);
+        }
+        .ussd-code{
+          font-family:monospace;
+          color:var(--green);
+          font-weight:700;
+        }
+        .copy-code-btn{
+          background:var(--green);
+          color:#fff;
+          border:none;
+          padding:6px 12px;
+          border-radius:6px;
+          font-size:12px;
+          cursor:pointer;
+          font-weight:600;
+        }
+        .method-btn{
+          width:100%;
+          background:var(--green);
+          color:#fff;
+          border:none;
+          padding:12px;
+          border-radius:10px;
+          font-weight:600;
+          font-size:14px;
+          cursor:pointer;
+          margin-top:12px;
+          transition:all .2s;
+        }
+        .method-btn:hover{background:var(--green-strong)}
+        .method-btn:active{transform:scale(.98)}
+
+        /* RECENT FUNDING */
+        .recent-list{
+          padding:0 16px 16px;
+        }
+        .recent-item{
+          background:var(--card);
+          border-radius:12px;
+          padding:14px;
+          margin-bottom:10px;
+          box-shadow:0 2px 6px rgba(0,0,0,.05);
+          display:flex;
+          align-items:center;
+          gap:12px;
+        }
+        .recent-icon{
+          width:40px;
+          height:40px;
+          border-radius:50%;
+          background:#e6f4ec;
+          color:var(--green);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:18px;
+        }
+        .recent-details{
+          flex:1;
+        }
+        .recent-title{
+          font-weight:600;
+          font-size:14px;
+          margin-bottom:4px;
+        }
+        .recent-time{
+          font-size:12px;
+          color:#888;
+        }
+        .recent-amount{
+          font-weight:700;
+          font-size:15px;
+          color:var(--green);
+        }
+
+        /* QR MODAL */
+        .modal{
+          position:fixed;
+          inset:0;
+          background:rgba(0,0,0,.6);
+          display:none;
+          align-items:center;
+          justify-content:center;
+          z-index:1000;
+          backdrop-filter:blur(4px);
+          padding:20px;
+        }
+        .modal.show{display:flex}
+        .modal-content{
+          background:var(--card);
+          border-radius:16px;
+          width:100%;
+          max-width:320px;
+          padding:24px;
+          text-align:center;
+          box-shadow:0 8px 32px rgba(0,0,0,.2);
+        }
+        .modal-title{
+          font-weight:700;
+          font-size:18px;
+          margin-bottom:20px;
+        }
+        .qr-code{
+          width:200px;
+          height:200px;
+          margin:0 auto 20px;
+          background:#fff;
+          border-radius:12px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:80px;
+          border:2px solid #e0e0e0;
+        }
+        .modal-text{
+          font-size:13px;
+          color:#888;
+          margin-bottom:20px;
+        }
+        .modal-close{
+          width:100%;
+          background:var(--green);
+          color:#fff;
+          border:none;
+          padding:12px;
+          border-radius:10px;
+          font-weight:600;
+          cursor:pointer;
+        }
+
+        /* BOTTOM NAV */
+        .bottom-nav{
+          position:fixed;
+          bottom:0;
+          left:0;
+          right:0;
+          height:60px;
+          background:var(--card);
+          display:flex;
+          border-top:1px solid rgba(0,0,0,.08);
+          box-shadow:0 -2px 10px rgba(0,0,0,.05);
+          z-index:100;
+        }
+        .bn{
+          flex:1;
+          text-decoration:none;
+          color:#666;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          font-size:11px;
+          font-weight:500;
+          transition:all .2s;
+          position:relative;
+        }
+        .bn::before{
+          content:"";
+          position:absolute;
+          top:0;
+          width:0;
+          height:3px;
+          background:var(--green);
+          transition:width .3s;
+        }
+        .bn.active{color:var(--green)}
+        .bn.active::before{width:60%}
+        .bn-icon{
+          font-size:20px;
+          margin-bottom:2px;
+        }
+
+        /* TOAST */
+        .toast{
+          position:fixed;
+          bottom:80px;
+          left:50%;
+          transform:translateX(-50%) translateY(100px);
+          background:var(--card);
+          color:var(--text);
+          padding:14px 20px;
+          border-radius:12px;
+          box-shadow:0 4px 16px rgba(0,0,0,.15);
+          display:flex;
+          align-items:center;
+          gap:10px;
+          z-index:1001;
+          opacity:0;
+          transition:all .3s;
+          max-width:90%;
+          border-left:4px solid var(--green);
+        }
+        .toast.show{
+          transform:translateX(-50%) translateY(0);
+          opacity:1;
+        }
+
+        /* EMPTY STATE */
+        .empty-state{
+          text-align:center;
+          padding:40px 20px;
+          color:#888;
+        }
+        .empty-icon{
+          font-size:48px;
+          margin-bottom:12px;
+          opacity:.5;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <button class="back-btn" id="backBtn">←</button>
+        <h2>Add Money</h2>
+        <button class="icon-btn" id="themeBtn">🌙</button>
+    </header>
+
+    <!-- ACCOUNT CARD -->
+    <section class="account-card">
+        <div class="account-label">Your HaqPay Account Number</div>
+        <div class="account-number" id="accountNumber">9137109134</div>
+        <div class="bank-name">PalmPay (Mobile Money)</div>
+        <div class="account-actions">
+            <button class="action-btn" id="copyBtn">
+                <span>📋</span> Copy
+            </button>
+            <button class="action-btn secondary" id="shareBtn">
+                <span>📤</span> Share
+            </button>
+        </div>
+    </section>
+
+    <!-- INFO BANNER -->
+    <div class="info-banner">
+        <div class="info-icon">⚡</div>
+        <div>Transfers reflect instantly. No charges applied.</div>
+    </div>
+
+    <!-- FUNDING METHODS -->
+    <div class="section-header">Funding Methods</div>
+
+    <div class="method-list">
+        <!-- BANK TRANSFER -->
+        <div class="method-card">
+            <div class="method-header">
+                <div class="method-icon">🏦</div>
+                <div class="method-info">
+                    <div class="method-title">Bank Transfer</div>
+                    <div class="method-desc">Transfer from any Nigerian bank</div>
+                </div>
+                <div class="method-badge">FREE</div>
+            </div>
+            <div class="method-details">
+                <div style="font-size:13px;color:#888;margin-bottom:8px;">
+                    ⏱️ Instant • No limit
+                </div>
+                <div style="font-size:13px;line-height:1.6;">
+                    1. Open your bank app<br>
+                    2. Transfer to <b>9137109134</b> (PalmPay)<br>
+                    3. Funds reflect instantly
+                </div>
+            </div>
+        </div>
+
+        <!-- USSD -->
+        <div class="method-card" id="ussdCard">
+            <div class="method-header">
+                <div class="method-icon">📱</div>
+                <div class="method-info">
+                    <div class="method-title">USSD Transfer</div>
+                    <div class="method-desc">Dial code from any phone</div>
+                </div>
+                <div class="method-badge">NO DATA</div>
+            </div>
+            <div class="method-details">
+                <div style="font-size:13px;color:#888;margin-bottom:8px;">
+                    ⏱️ Instant • Works offline
+                </div>
+                <div class="ussd-list">
+                    <div class="ussd-item">
+                        <div>
+                            <div class="ussd-bank">GTBank</div>
+                            <div class="ussd-code">*737*22*9137109134#</div>
+                        </div>
+                        <button class="copy-code-btn" onclick="copyUSSD('*737*22*9137109134#')">Copy</button>
+                    </div>
+                    <div class="ussd-item">
+                        <div>
+                            <div class="ussd-bank">Access Bank</div>
+                            <div class="ussd-code">*901*9137109134*Amount#</div>
+                        </div>
+                        <button class="copy-code-btn" onclick="copyUSSD('*901*9137109134*Amount#')">Copy</button>
+                    </div>
+                    <div class="ussd-item">
+                        <div>
+                            <div class="ussd-bank">First Bank</div>
+                            <div class="ussd-code">*894*9137109134*Amount#</div>
+                        </div>
+                        <button class="copy-code-btn" onclick="copyUSSD('*894*9137109134*Amount#')">Copy</button>
+                    </div>
+                    <div class="ussd-item">
+                        <div>
+                            <div class="ussd-bank">Zenith Bank</div>
+                            <div class="ussd-code">*966*9137109134*Amount#</div>
+                        </div>
+                        <button class="copy-code-btn" onclick="copyUSSD('*966*9137109134*Amount#')">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD PAYMENT -->
+        <div class="method-card" id="cardCard">
+            <div class="method-header">
+                <div class="method-icon">💳</div>
+                <div class="method-info">
+                    <div class="method-title">Debit Card</div>
+                    <div class="method-desc">Add money with your card</div>
+                </div>
+                <div class="method-badge">INSTANT</div>
+            </div>
+            <div class="method-details">
+                <div style="font-size:13px;color:#888;margin-bottom:8px;">
+                    ⏱️ Instant • Min: ₦100 • Max: ₦500,000
+                </div>
+                <button class="method-btn">Add With Card</button>
+            </div>
+        </div>
+
+        <!-- QR CODE -->
+        <div class="method-card" id="qrCard">
+            <div class="method-header">
+                <div class="method-icon">📷</div>
+                <div class="method-info">
+                    <div class="method-title">QR Code</div>
+                    <div class="method-desc">Share QR for easy payment</div>
+                </div>
+            </div>
+            <div class="method-details">
+                <div style="font-size:13px;color:#888;margin-bottom:8px;">
+                    Show QR code to receive payments
+                </div>
+                <button class="method-btn" id="showQRBtn">Show QR Code</button>
+            </div>
+        </div>
+
+        <!-- CASH DEPOSIT -->
+        <div class="method-card">
+            <div class="method-header">
+                <div class="method-icon">🏧</div>
+                <div class="method-info">
+                    <div class="method-title">Cash Deposit</div>
+                    <div class="method-desc">Deposit at agent locations</div>
+                </div>
+            </div>
+            <div class="method-details">
+                <div style="font-size:13px;color:#888;margin-bottom:8px;">
+                    Visit any HaqPay agent near you
+                </div>
+                <button class="method-btn">Find Nearest Agent</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECENT FUNDING -->
+    <div class="section-header">Recent Funding</div>
+    <div class="recent-list" id="recentList">
+        <!-- Recent funding will be loaded here -->
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bn">
+            <span class="bn-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="finance.html" class="bn active">
+            <span class="bn-icon">💼</span>
+            <span>Finance</span>
+        </a>
+        <a href="reward.html" class="bn">
+            <span class="bn-icon">🎁</span>
+            <span>Rewards</span>
+        </a>
+        <a href="me.html" class="bn">
+            <span class="bn-icon">👤</span>
+            <span>Me</span>
+        </a>
+    </nav>
+
+    <!-- QR MODAL -->
+    <div class="modal" id="qrModal">
+        <div class="modal-content">
+            <div class="modal-title">Scan to Pay</div>
+            <div class="qr-code">
+                📱
+            </div>
+            <div class="modal-text">
+                Scan this QR code with any banking app to send money to your HaqPay account
+            </div>
+            <button class="modal-close" id="closeQR">Close</button>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <span id="toastMsg"></span>
+    </div>
+
+    <script>
+        // Recent funding data
+        const recentFunding = [
+            {
+                icon: '🏦',
+                title: 'Bank Transfer',
+                time: 'Today, 2:30 PM',
+                amount: 15000
+            },
+            {
+                icon: '💳',
+                title: 'Card Payment',
+                time: 'Yesterday, 9:15 AM',
+                amount: 8500
+            },
+            {
+                icon: '🏧',
+                title: 'Agent Deposit',
+                time: 'Dec 12, 4:20 PM',
+                amount: 20000
+            }
+        ];
+
+        // Load recent funding
+        function loadRecentFunding() {
+            const list = document.getElementById('recentList');
+            
+            if (recentFunding.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">💰</div>
+                        <div>No funding history yet</div>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = recentFunding.map(f => `
+                <div class="recent-item">
+                    <div class="recent-icon">${f.icon}</div>
+                    <div class="recent-details">
+                        <div class="recent-title">${f.title}</div>
+                        <div class="recent-time">${f.time}</div>
+                    </div>
+                    <div class="recent-amount">+₦${f.amount.toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+
+        
+
+        // Copy account number
+        function copyAccountNumber() {
+            const accountNumber = document.getElementById('accountNumber').textContent;
+            navigator.clipboard.writeText(accountNumber).then(() => {
+                showToast('✅ Account number copied!');
+            }).catch(() => {
+                showToast('❌ Failed to copy');
+            });
+        }
+
+        // Share account details
+        function shareAccount() {
+            const text = `Send money to my HaqPay account:\n\nAccount Number: 9137109134\nBank: PalmPay (Mobile Money)`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My HaqPay Account',
+                    text: text
+                }).then(() => {
+                    showToast('📤 Shared successfully!');
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('📋 Account details copied!');
+                });
+            }
+        }
+
+        // Copy USSD code
+        function copyUSSD(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('✅ USSD code copied!');
+            }).catch(() => {
+                showToast('❌ Failed to copy');
+            });
+        }
+
+        // Show QR modal
+        function showQR() {
+            document.getElementById('qrModal').classList.add('show');
+        }
+
+        // Close QR modal
+        function closeQR() {
+            document.getElementById('qrModal').classList.remove('show');
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Dark mode
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+        if(darkMode) document.body.classList.add('dark');
+
+        function toggleDark() {
+            document.body.classList.toggle('dark');
+            darkMode = !darkMode;
+            localStorage.setItem('darkMode', darkMode);
+            showToast(darkMode ? '🌙 Dark mode on' : '☀️ Light mode on');
+        }
+
+        // Event listeners
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = 'finance.html';
+        });
+
+        document.getElementById('themeBtn').addEventListener('click', toggleDark);
+        document.getElementById('copyBtn').addEventListener('click', copyAccountNumber);
+        document.getElementById('shareBtn').addEventListener('click', shareAccount);
+        document.getElementById('showQRBtn').addEventListener('click', showQR);
+        document.getElementById('closeQR').addEventListener('click', closeQR);
+
+        // Card payment
+        document.querySelectorAll('.method-btn').forEach((btn, index) => {
+            if (btn.textContent.includes('Add With Card')) {
+                btn.addEventListener('click', () => {
+                    showToast('💳 Opening card payment...');
+                });
+            } else if (btn.textContent.includes('Find Nearest Agent')) {
+                btn.addEventListener('click', () => {
+                    showToast('🗺️ Finding agents near you...');
+                });
+            }
+        });
+
+        // Close modal on backdrop click
+        document.getElementById('qrModal').addEventListener('click', (e) => {
+            if (e.target.id === 'qrModal') {
+                closeQR();
+            }
+        });
+
+        // Initialize
+        loadRecentFunding();
+    </script>
+
+</body>
+</html>
