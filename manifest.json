@@ -1,0 +1,59 @@
+{
+  "name": "HaqPay - Secure Payments",
+  "short_name": "HaqPay",
+  "description": "Fast, secure, and reliable payment solutions for everyone",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#008037",
+  "theme_color": "#008037",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=192",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=512",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "business"],
+  "screenshots": [
+    {
+      "src": "https://placehold.co/540x720/008037/ffffff?text=HaqPay+Home",
+      "sizes": "540x720",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Transfer Money",
+      "short_name": "Transfer",
+      "description": "Send money instantly",
+      "url": "/transfer.html",
+      "icons": [
+        {
+          "src": "https://api.dicebear.com/7.x/identicon/svg?seed=Transfer&backgroundColor=008037",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Buy Airtime",
+      "short_name": "Airtime",
+      "description": "Recharge airtime",
+      "url": "/airtime.html",
+      "icons": [
+        {
+          "src": "https://api.dicebear.com/7.x/identicon/svg?seed=Airtime&backgroundColor=008037",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}
