@@ -511,6 +511,14 @@ body{
 <div class="toast" id="toast"></div>
 
 <script>
+// Check authentication FIRST
+(function checkAuth(){
+  const isLoggedIn = localStorage.getItem('haqpay_logged_in');
+  if(isLoggedIn !== 'true'){
+    window.location.href = 'login.html';
+  }
+})();
+
 let darkMode = localStorage.getItem('darkMode') === 'true';
 if(darkMode) {
   document.body.classList.add('dark');
