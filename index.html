@@ -10,7 +10,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="HaqPay">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=180">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icon-192.png">
 
 <style>
 :root{
@@ -404,7 +406,7 @@ body{
 
 <header class="topbar">
   <div class="left">
-    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" class="profile" onclick="location.href='profile.html'">
+    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" class="profile" onclick="location.href='more.html'">
     <div>
       <div style="font-size:12px;opacity:.9">Good day</div>
       <b id="userName">User</b>
@@ -419,6 +421,19 @@ body{
 
 <div class="search-box">
   <input id="search" placeholder="Search HaqPay services…">
+</div>
+
+<!-- Install App Banner -->
+<div id="installBanner" style="display:none;margin:12px 16px 0;background:linear-gradient(135deg,#00a84e,#008037);padding:14px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="font-size:28px">📱</div>
+    <div style="flex:1;color:#fff">
+      <strong style="display:block;font-size:14px;margin-bottom:2px">Install HaqPay</strong>
+      <small style="opacity:.9;font-size:12px">Quick access from home screen</small>
+    </div>
+    <button onclick="installApp()" style="background:#fff;color:#008037;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px">Install</button>
+    <button onclick="dismissBanner()" style="background:transparent;border:none;color:#fff;font-size:20px;cursor:pointer;padding:4px">×</button>
+  </div>
 </div>
 
 <section class="balance-card">
@@ -491,9 +506,9 @@ body{
     <span class="bn-icon">🎁</span>
     <span>Rewards</span>
   </a>
-  <a href="me.html" class="bn">
-    <span class="bn-icon">👤</span>
-    <span>Me</span>
+  <a href="more.html" class="bn">
+    <span class="bn-icon">☰</span>
+    <span>More</span>
   </a>
 </nav>
 
@@ -512,7 +527,7 @@ body{
 </div>
 
 <script>
-// Check authentication
+// Check authentication FIRST
 function checkAuth(){
   const isLoggedIn = localStorage.getItem('haqpay_logged_in');
   if(isLoggedIn !== 'true'){
@@ -520,6 +535,12 @@ function checkAuth(){
     return false;
   }
   return true;
+}
+
+// Initialize immediately
+if(!checkAuth()){
+  // Stop execution if not logged in
+  throw new Error('Not authenticated');
 }
 
 // Load user data
@@ -614,19 +635,63 @@ pinModal.onclick = (e) => {
 }
 
 // Initialize
-if(checkAuth()){
-  loadUserData();
-  setTimeout(() => {
-    if(window.currentUser){
-      const firstName = window.currentUser.fullName.split(' ')[0];
-      showToast(`👋 Welcome back, ${firstName}!`);
-    }
-  }, 1000);
-}
+loadUserData();
+setTimeout(() => {
+  if(window.currentUser){
+    const firstName = window.currentUser.fullName.split(' ')[0];
+    showToast(`👋 Welcome back, ${firstName}!`);
+  }
+}, 1000);
 
 // PWA Installation and Service Worker
 let deferredPrompt;
-let installButton;
+
+// Check if already installed
+function isPWAInstalled() {
+  return window.matchMedia('(display-mode: standalone)').matches || 
+         window.navigator.standalone === true ||
+         localStorage.getItem('pwa_installed') === 'true';
+}
+
+// Show install banner
+function showInstallBanner() {
+  if (!isPWAInstalled() && localStorage.getItem('install_dismissed') !== 'true') {
+    document.getElementById('installBanner').style.display = 'block';
+  }
+}
+
+// Install app
+window.installApp = async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      showToast('✅ App installed successfully!');
+      localStorage.setItem('pwa_installed', 'true');
+      document.getElementById('installBanner').style.display = 'none';
+    }
+    deferredPrompt = null;
+  } else {
+    // Fallback: Show manual instructions
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+    
+    if (isIOS) {
+      alert('📱 To Install:\n\n1. Tap the Share button (⬆️)\n2. Scroll and tap "Add to Home Screen"\n3. Tap "Add"');
+    } else if (isAndroid) {
+      alert('📱 To Install:\n\n1. Tap the menu (⋮) at top-right\n2. Tap "Install app" or "Add to Home screen"\n3. Tap "Install"');
+    } else {
+      alert('📱 To Install:\n\n1. Look for the install icon (⊕) in the address bar\n2. Click "Install"\n\nOr use the browser menu → "Install HaqPay"');
+    }
+  }
+};
+
+// Dismiss banner
+window.dismissBanner = () => {
+  document.getElementById('installBanner').style.display = 'none';
+  localStorage.setItem('install_dismissed', 'true');
+};
 
 // Register Service Worker
 if ('serviceWorker' in navigator) {
@@ -645,77 +710,24 @@ if ('serviceWorker' in navigator) {
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  showInstallPrompt();
+  showInstallBanner();
 });
-
-// Show install prompt
-function showInstallPrompt() {
-  const installPrompt = document.createElement('div');
-  installPrompt.id = 'installPrompt';
-  installPrompt.innerHTML = `
-    <div style="position:fixed;bottom:80px;left:16px;right:16px;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:999;display:flex;align-items:center;gap:12px;">
-      <div style="flex:1">
-        <strong style="display:block;margin-bottom:4px;color:var(--text)">Install HaqPay</strong>
-        <small style="color:#666">Add to home screen for quick access</small>
-      </div>
-      <button onclick="installPWA()" style="background:var(--green);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-weight:600;cursor:pointer;white-space:nowrap">Install</button>
-      <button onclick="dismissInstall()" style="background:transparent;border:none;font-size:20px;cursor:pointer;color:#999">×</button>
-    </div>
-  `;
-  document.body.appendChild(installPrompt);
-}
-
-// Install PWA
-window.installPWA = async () => {
-  if (!deferredPrompt) return;
-  
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
-  
-  if (outcome === 'accepted') {
-    showToast('✅ App installed successfully!');
-  }
-  
-  deferredPrompt = null;
-  dismissInstall();
-};
-
-// Dismiss install prompt
-window.dismissInstall = () => {
-  const prompt = document.getElementById('installPrompt');
-  if (prompt) prompt.remove();
-};
 
 // Listen for app installed event
 window.addEventListener('appinstalled', () => {
   showToast('🎉 HaqPay installed! Launch from your home screen.');
+  localStorage.setItem('pwa_installed', 'true');
   deferredPrompt = null;
+  document.getElementById('installBanner').style.display = 'none';
 });
 
-// Request notification permission
-if ('Notification' in window && navigator.serviceWorker) {
-  if (Notification.permission === 'default') {
-    setTimeout(() => {
-      Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-          showToast('🔔 Notifications enabled');
-        }
-      });
-    }, 5000);
+// Show banner after a delay if not installed
+setTimeout(() => {
+  if (!isPWAInstalled()) {
+    showInstallBanner();
   }
-}
-
-// Check if running as PWA
-function isPWA() {
-  return window.matchMedia('(display-mode: standalone)').matches || 
-         window.navigator.standalone === true;
-}
-
-if (isPWA()) {
-  console.log('Running as PWA');
-  // Hide browser UI elements if needed
-}
+}, 3000);
 </script>
 
 </body>
-</html>
+  </html>
