@@ -10,15 +10,15 @@
   "scope": "/",
   "icons": [
     {
-      "src": "https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=192",
+      "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://api.dicebear.com/7.x/identicon/svg?seed=HaqPay&backgroundColor=008037&size=512",
+      "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
